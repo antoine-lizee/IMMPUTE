@@ -223,7 +223,7 @@ matchData4 <- swapColumns(matchData4, "DRB", "locus.A")
 matchData4 <- swapColumns(matchData4, "e-HLA", "HIBAG")
 matchData4Euros <- booleaniseFactors(matchData3Euros, c("method", "locus"))
 matchData4Euros <- swapColumns(matchData4Euros, "DRB", "locus.A")
-matchData4Euros <- swapColumns(matchData4Euros, "e-HLA", "HIBAG")
+matchData4Euros <- swapColumns(matchData4Euros, "e-HLA", "HLA*IMP")
 
 MOD <- glm(data = matchData4, cbind(success, fail) ~ . + 0, family = binomial(logit))
 MOD.intercept <- glm(data = matchData4, cbind(success, fail) ~ ., family = binomial(logit))
@@ -285,7 +285,7 @@ plotModel <- function(model) {
 }
 
 library(grid)
-plotModelColors <- function(model, yLims = NULL) {
+getCoeffDf <- function(model) {
   c <- coefficients(model)
   nc <- gsub("`", "", names(c))
   coeffDf <- data.frame(name = nc, value = sub(pattern="(locus|method)(\\.)*", "", nc), type = sub(pattern="(locus|method)(.*)", "\\1", nc), OR = exp(c), exp(confint(model)))
@@ -302,6 +302,11 @@ plotModelColors <- function(model, yLims = NULL) {
   }
   values <- levels(coeffDf$value)
   coeffDf$value <- factor(coeffDf$value, levels = values[order(tolower(values))])
+  return(coeffDf)
+}
+
+plotModelColors <- function(model, yLims = NULL) {
+  coeffDf <- getCoeffDf(model)
   g.intercept.line <- geom_hline(y=1, color = "red", size = 0.8)
   if (!is.null(yLims)){
     g.scale <- scale_y_continuous(limits = yLims) 
@@ -317,7 +322,7 @@ plotModelColors <- function(model, yLims = NULL) {
     g.scale +
     theme(axis.text.x = element_text(angle = -12, hjust = 0.3),
           plot.margin = unit(c(0.5, 1, 0., 0.), "lines"),
-#           axis.title.x = element_blank(),
+          #           axis.title.x = element_blank(),
           panel.margin = unit(0.5, "lines"))
 }
 
@@ -416,56 +421,66 @@ ggsave(filename=paste0("/media/FD/Dropbox/IMMPUTE/Modeling/", "SupplFigure_Model
        plot=plotModelColors(MODR.intercept),
        w=8.9*2, h=7.2*2, units="cm", dpi=300/2)
 
+
+# Output model coefficients for thesupplementary table --------------------
+
+getCoeffs <- function(model) {
+  cbind(round(coefficients(model),2), round(confint(model),2))
+}
+
+print(getCoeffs(MOD.intercept))
+print(getCoeffs(MODEURO.intercept))
+
 if (extraStuff.b <- FALSE) {
-
-# Conditional models ------------------------------------------------------
-
-stratifiedDataFileName <- "StratifiedData.Rdata"
-if (!any(grepl(stratifiedDataFileName, dir()))) {
-  matchData5 <- NULL
-  for (i in 1:nrow(matchData)) {
-    matchData5 <- rbind(matchData5, 
-                        rbind(within(matchData[i,], success <- floor(success/2)),
-                              within(matchData[i,], success <- ceiling(success/2))))
+  
+  # Conditional models ------------------------------------------------------
+  
+  stratifiedDataFileName <- "StratifiedData.Rdata"
+  if (!any(grepl(stratifiedDataFileName, dir()))) {
+    matchData5 <- NULL
+    for (i in 1:nrow(matchData)) {
+      matchData5 <- rbind(matchData5, 
+                          rbind(within(matchData[i,], success <- floor(success/2)),
+                                within(matchData[i,], success <- ceiling(success/2))))
+    }
+    save(file = stratifiedDataFileName, matchData5)
+  } else {
+    load(stratifiedDataFileName)
   }
-  save(file = stratifiedDataFileName, matchData5)
-} else {
-  load(stratifiedDataFileName)
-}
-
-# write.table(file = "~/Dropbox/IMMPUTE/Modeling/DataForPA.txt", matchData5)
-# write.table(file = "~/Dropbox/IMMPUTE/Modeling/DataForPA.txt", matchData5, quote = F)
-
-stratifiedModels1FileName <- "StratifiedModels1.Rdata"
-require(survival)
-library(ordinal)
-if (!any(grepl(stratifiedModels1FileName, dir()))) {
-  cmod <- clogit(data = matchData5, success ~ method + locus + strata(sample.id))
-  ## Ordinal fit, different from the binomial one.
-  fm1 <- clmm(factor(success) ~ method + locus + (1|sample.id), data = matchData1, Hess = TRUE)
-  # fm2 <- clmm(factor(success) ~ method + locus + (1|sample.id), data = matchData, Hess = FALSE) # Just less info
-  fm3 <- clmm(factor(success) ~ method + locus + (1|sample.id), data = matchData1, Hess = TRUE, nAGQ = 10)
-  fm4 <- clm(factor(success) ~ method + locus, data = matchData1, Hess = TRUE) 
-  # to be compared with
-  fm4Binom <- glm(data = matchData1, cbind(success, 2-success) ~ method + locus, family = binomial(link=logit))
-  save(file = stratifiedModels1FileName, cmod, fm1, fm2, fm3, fm4)
-} else {
-  load(stratifiedModels1FileName)
-}
-
-
-# Full study of the stratified model --------------------------------------
-# See http://www.ats.ucla.edu/stat/r/dae/melogit.htm
-# and https://stat.ethz.ch/pipermail/r-sig-mixed-models/2013q1/020016.html for MCMCs
-
-# library(GGally) # helper for ggplot, not used here
-library(lme4)
-# estimate the model and store results in m
-m <- glmer(success ~ method + locus + (1|sample.id), data = matchData5, 
-           family = binomial, control = glmerControl(optimizer = "bobyqa"))
-
-library(MCMCglmm)
-
+  
+  # write.table(file = "~/Dropbox/IMMPUTE/Modeling/DataForPA.txt", matchData5)
+  # write.table(file = "~/Dropbox/IMMPUTE/Modeling/DataForPA.txt", matchData5, quote = F)
+  
+  stratifiedModels1FileName <- "StratifiedModels1.Rdata"
+  require(survival)
+  library(ordinal)
+  if (!any(grepl(stratifiedModels1FileName, dir()))) {
+    cmod <- clogit(data = matchData5, success ~ method + locus + strata(sample.id))
+    ## Ordinal fit, different from the binomial one.
+    fm1 <- clmm(factor(success) ~ method + locus + (1|sample.id), data = matchData1, Hess = TRUE)
+    # fm2 <- clmm(factor(success) ~ method + locus + (1|sample.id), data = matchData, Hess = FALSE) # Just less info
+    fm3 <- clmm(factor(success) ~ method + locus + (1|sample.id), data = matchData1, Hess = TRUE, nAGQ = 10)
+    fm4 <- clm(factor(success) ~ method + locus, data = matchData1, Hess = TRUE) 
+    # to be compared with
+    fm4Binom <- glm(data = matchData1, cbind(success, 2-success) ~ method + locus, family = binomial(link=logit))
+    save(file = stratifiedModels1FileName, cmod, fm1, fm2, fm3, fm4)
+  } else {
+    load(stratifiedModels1FileName)
+  }
+  
+  
+  # Full study of the stratified model --------------------------------------
+  # See http://www.ats.ucla.edu/stat/r/dae/melogit.htm
+  # and https://stat.ethz.ch/pipermail/r-sig-mixed-models/2013q1/020016.html for MCMCs
+  
+  # library(GGally) # helper for ggplot, not used here
+  library(lme4)
+  # estimate the model and store results in m
+  m <- glmer(success ~ method + locus + (1|sample.id), data = matchData5, 
+             family = binomial, control = glmerControl(optimizer = "bobyqa"))
+  
+  library(MCMCglmm)
+  
 }
 
 

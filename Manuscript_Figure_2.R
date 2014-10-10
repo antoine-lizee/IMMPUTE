@@ -54,9 +54,7 @@ perf0.5_data <- giveRowAndCols(perf0.5_data)
 
 
 ## Print two columns
-# png("/media/FD/Dropbox/IMMPUTE/Manuscript/Figure_2.png", w=8.00, h=6.5, units="in", res=300)
-png("/media/FD/Dropbox/IMMPUTE/Manuscript/Figure_2_2cols.png", w=18.3, h=12, units="cm", res=300)
-# X11(w=12, h=8)
+
 require(ggplot2)
 require(grid)
 g1 <- ggplot(data) + theme_bw(base_size=11) +
@@ -71,6 +69,7 @@ g1 <- ggplot(data) + theme_bw(base_size=11) +
   labs(y="Performance (%)", x="Call Rate(%)") +
   #   scale_y_continuous(expand=c(0,0)) +
   coord_cartesian(xlim=c(47,103)) +
+  scale_x_reverse() +
   palette_perso +
 #   scale_color_brewer(type="qual", palette=2) +
   palette_perso_fill +
@@ -94,6 +93,9 @@ g1 <- ggplot(data) + theme_bw(base_size=11) +
         #         legend.background = element_rect(colour = "black"), # DEBUG ONLY
         plot.margin = unit(c(0.1, 0.5, 0.6, 0.5), "lines")) ## INTERACTS WITH LEGEND MARGIN on the right, for the second element
 
+# png("/media/FD/Dropbox/IMMPUTE/Manuscript/Figure_2.png", w=8.00, h=6.5, units="in", res=300)
+png("/media/FD/Dropbox/IMMPUTE/Manuscript/Figure_2_2cols.png", w=18.3, h=12, units="cm", res=300)
+# X11(w=12, h=8)
 print(g1)
 dev.off()
 
@@ -120,6 +122,7 @@ if (oneColumnRightLegend <- FALSE) {
     labs(y="Performance (%)", x="Call Rate(%)") +
     #   scale_y_continuous(expand=c(0,0)) +
     coord_cartesian(xlim=c(47,103)) +
+    scale_x_reverse() +
     palette_perso +
 #     scale_color_brewer(type="qual", palette=2) +
     geom_hline(y=90, linetype=2, size=0.4, color="grey70") +
@@ -169,6 +172,7 @@ g1 <- ggplot(data) + theme_bw(base_size=7) +
   #   scale_shape_manual(values=c(15,19,18,17)) +
   labs(y="Performance (%)", x="Call Rate(%)", colour = "Method:") +
   #   scale_y_continuous(expand=c(0,0)) +
+  scale_x_reverse() +
   coord_cartesian(xlim=c(47,103)) +
   palette_perso +
   #     scale_color_brewer(type="qual", palette=2) +
@@ -226,6 +230,7 @@ if (oldPrinting <- FALSE) {
     labs(y="Performance (%)", x="Call Rate(%)") +
     #   scale_y_continuous(expand=c(0,0)) +
     coord_cartesian(xlim=c(47,103)) +
+    scale_x_reverse() +
     palette_perso +
     #     scale_color_brewer(type="qual", palette=2) +
     palette_perso_fill +
@@ -276,6 +281,7 @@ if (printRealSize.b <- FALSE) {
     labs(y="Performance (%)", x="Call Rate(%)") +
     #   scale_y_continuous(expand=c(0,0)) +
     coord_cartesian(xlim=c(47,103)) +
+    scale_x_reverse() +
     scale_color_brewer(type="qual", palette=2) +
     geom_hline(y=90, linetype=2, size=0.8, color="grey85") +
     theme(strip.background = element_blank(), strip.text = element_blank(),
@@ -324,6 +330,7 @@ if (colorSchemes.b <- FALSE) {
       labs(y="Performance (%)", x="Call Rate(%)") +
       #   scale_y_continuous(expand=c(0,0)) +
       coord_cartesian(xlim=c(47,103)) +
+      scale_x_reverse() +
       scale_color_brewer(type="qual", palette=colorScaleNum) +
       geom_hline(y=90, linetype=2, size=1, color="grey85") +
       #   theme(axis.ticks.y = element_blank(), axis.text.y=element_blank(), 

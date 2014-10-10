@@ -6,6 +6,8 @@
 options(java.parameters="-Xmx4g")
 require(XLConnect)
 require(grid)
+library(ggplot2)
+library(reshape2)
 source("geom_point_width_modified.R")
 
 source("Manuscript_palettes.R")
