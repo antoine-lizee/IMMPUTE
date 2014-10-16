@@ -25,13 +25,17 @@ genesDf <- do.call(rbind,
                                                                   xmaxD <- xmax - x
                                                                 })}))
 
-KGSNPs <- read.table("../Data/KG.map")[,-c(1,3)]
+KGSNPs <- read.table("~/Dropbox/IMMPUTE/Side_Investigations/mhcKG_pre_QC/KG.map")[,-c(1,3)]
 colnames(KGSNPs) <- c("snp.id", "snp.position")
 KGSNPs$snp.position <- KGSNPs$snp.position/1000
 
-KGSNPs.preQC <- read.table("../Data/1000Genome.bim")[,c(2,4)]
+KGSNPs.preQC <- read.table("~/Dropbox/IMMPUTE/Side_Investigations/mhcKG_pre_QC/1000Genome.bim")[,c(2,4)]
 colnames(KGSNPs.preQC) <- c("snp.id", "snp.position")
 KGSNPs.preQC$snp.position <- KGSNPs.preQC$snp.position/1000
+
+KGSNPs.preMerge <- read.table("~/Dropbox/IMMPUTE/Side_Investigations/mhcKG_pre_QC/KG_MHCSnps.bim")[,c(2,4)]
+colnames(KGSNPs.preMerge) <- c("snp.id", "snp.position")
+KGSNPs.preMerge$snp.position <- KGSNPs.preMerge$snp.position/1000
 
 
 
@@ -76,8 +80,27 @@ data_allele.pQC <- ddply(data_allele_0.pQC, ~ allele, function(df) {
   df3 <- within(df2bis,
                 cumsnpRel <- abs(1:(nrow(df2bis))-which(df2bis$snp.distance>0)[1]))})
 
+##Do the same for the preMerge SNPs
+data_allele_0.pM <- do.call(rbind, 
+                             lapply(names(GenePosition_hg19), 
+                                    function(allele_i) { 
+                                      range_i <- GenePosition_hg19[[allele_i]] + c(-500, 500)
+                                      within(data.frame(allele = allele_i, 
+                                                        KGSNPs.preMerge[isBtwn(KGSNPs.preMerge$snp.position, range_i),]),
+                                             snp.distance <- snp.position - genesDf[genesDf$allele == allele_i, "x"])
+                                    }))
+data_allele.pM <- ddply(data_allele_0.pM, ~ allele, function(df) {
+  df2 <- df[order(abs(df$snp.distance)),]
+  df3 <- data.frame(df2, snp.order = 1:nrow(df2), 
+                    cumsnp = (1:nrow(df2)),
+                    cumsnpRate = (1:nrow(df2))/nrow(df2))
+  df2bis <- df3[order(df3$snp.distance),]
+  df3 <- within(df2bis,
+                cumsnpRel <- abs(1:(nrow(df2bis))-which(df2bis$snp.distance>0)[1]))})
+
+
 #have a look
-cbind("post-QC" = table(data_allele_0$allele), "pre-QC" = table(data_allele_0.pQC$allele))
+cbind("post-QC" = table(data_allele_0$allele), "pre-QC" = table(data_allele_0.pQC$allele), "pre-Merge" = table(data_allele_0.pM$allele))
 
 
 # Graph it ----------------------------------------------------------------
@@ -97,7 +120,7 @@ gp$pos <- ggplot(data = data_allele_0) +
 
 gp$dist <- ggplot(data = data_allele_0) + 
   geom_density(data = data_allele_0,
-               aes(x = snp.distance, y=..count.., alpha = "post-QC"), color = NA, fill = 'grey50', adjust = 0.05) + #  
+               aes(x = snp.distance, y=..count.., alpha = "post-QC"), color = NA, fill = 'grey50', alpha = 0.8, adjust = 0.05) + #  
   geom_rect(data = genesDf, aes(xmin = xminD, xmax = xmaxD, fill = allele), alpha = 0.3, color = NA, ymin = 0, ymax = Inf-1) + # ymin = -1.2, ymax = -0.2)+ 
   geom_rect(data = genesDf, aes(xmin = xminD, xmax = xmaxD, fill = allele, color = allele), ymin = -0.3, ymax = -0.1) + # 
   geom_density(data = data_allele_0.pQC, aes(x = snp.distance, y=..count.., fill = allele, color = allele, alpha = "pre-QC"), size = 0.5,  adjust = 0.05) + #  
@@ -130,9 +153,37 @@ gp$dist_cum_abs <- ggplot(data = data_allele) +
 
 pdf("/media/FD/Dropbox/IMMPUTE/Side_Investigations/Extra_Fig_SNP_DRB1.pdf", w = 12, h= 8)
 dummy <- lapply(gp, print)
-print(gp$dist + xlim(-200,200))
+print(ggplot(data = data_allele_0) + 
+        geom_density(aes(x = snp.distance, y=..count.., alpha = "post-QC"), color = NA, fill = 'grey50', alpha = 0.8, adjust = 0.02) + #  
+        geom_rect(data = genesDf, aes(xmin = xminD, xmax = xmaxD, fill = allele), alpha = 0.3, color = NA, ymin = 0, ymax = Inf-1) + # ymin = -1.2, ymax = -0.2)+ 
+        geom_rect(data = genesDf, aes(xmin = xminD, xmax = xmaxD, fill = allele, color = allele), ymin = -0.3, ymax = -0.1) + # 
+        geom_density(data = data_allele_0.pQC, aes(x = snp.distance, y=..count.., fill = allele, color = allele, alpha = "pre-QC"), size = 0.5,  adjust = 0.02) + #  
+        labs(title = paste("Comparison of SNP density around the four HLA loci, centered on each locus") ,
+             x = "SNP distance to the locus (kbp)", y="SNP density (SNP/kb)", fill = "locus", color = "locus") +
+        facet_grid(allele~.) +
+        theme_bw() +
+        scale_alpha_manual("", limits = c("pre-QC", "post-QC"), values = c(0.3, 1)) + 
+        xlim(-200,200))
 print(gp$dist_cum + xlim(-200,200) + ylim(0,700))
 print(gp$dist_cum_abs + xlim(0,200) + ylim(0,1300))
 dev.off()
 
 
+
+# Quick tries -------------------------------------------------------------
+
+pdf("/media/FD/Dropbox/IMMPUTE/Side_Investigations/Extra_Fig_SNP_DRB1_1s.pdf", w = 12, h= 8)
+print(ggplot(data = data_allele_0) + 
+  geom_density(data = data_allele_0.pM, aes(x = snp.distance, y=..count../10, alpha = "pre-Merge"), color = "grey30", fill = NA, size = 1,  adjust = 0.1) + #  
+  geom_density(aes(x = snp.distance, y=..count.., alpha = "post-QC"), color = NA, fill = 'grey50', alpha = 0.8, adjust = 0.05) + #  
+  geom_rect(data = genesDf, aes(xmin = xminD, xmax = xmaxD, fill = allele), alpha = 0.3, color = NA, ymin = 0, ymax = Inf-1) + # ymin = -1.2, ymax = -0.2)+ 
+  geom_rect(data = genesDf, aes(xmin = xminD, xmax = xmaxD, fill = allele, color = allele), ymin = -0.3, ymax = -0.1) + # 
+  geom_density(data = data_allele_0.pQC, aes(x = snp.distance, y=..count.., fill = allele, color = allele, alpha = "pre-QC"), size = 0.5,  adjust = 0.05) + #  
+  labs(title = paste("Comparison of SNP density around the four HLA loci, centered on each locus") ,
+       x = "SNP distance to the locus (kbp)", y="SNP density (SNP/kb)", fill = "locus", color = "locus") +
+  #   scale_y_continuous(breaks = NULL) +
+  facet_grid(allele~.) +
+  theme_bw() +
+  scale_alpha_manual("", limits = c( "pre-Merge", "pre-QC", "post-QC"), values = c(1, 0.3, 1))
+)
+dev.off()
