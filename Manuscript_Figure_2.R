@@ -158,8 +158,7 @@ if (oneColumnRightLegend <- FALSE) {
 ####
 
 # png("/media/FD/Dropbox/IMMPUTE/Manuscript/Figure_2.png", w=8.00, h=6.5, units="in", res=300)
-png("/media/FD/Dropbox/IMMPUTE/Manuscript/Figure_2_1col_bottom.png", w=8.9, h=7.8, units="cm", res=300)
-# X11(w=6, h=4)
+
 require(ggplot2)
 require(grid)
 g1 <- ggplot(data) + theme_bw(base_size=7) +
@@ -200,6 +199,8 @@ g1 <- ggplot(data) + theme_bw(base_size=7) +
         axis.ticks = element_line(size = 0.1),
         axis.ticks.length = unit(0.15, "lines"))
 
+png("/media/FD/Dropbox/IMMPUTE/Manuscript/Figure_2_1col_bottom.png", w=8.9, h=7.8, units="cm", res=300)
+# X11(w=6, h=4)
 print(g1)
 dev.off()
 

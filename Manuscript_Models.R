@@ -12,10 +12,10 @@ loci <- c("A", "B", "C", "DRB1")
 # Find by hand the correct paths
 parentDir <- "~/Dropbox/IMMPUTE/Imputation Scoring"
 dir(pattern = "MATCH_out.txt", path = parentDir, full.names = T, recursive = T)
-filePaths <- matrix(c("~/Dropbox/IMMPUTE/Imputation Scoring/CCHMC/KNN AI/4D/PGM conservative Mask_None/MATCH_out.txt", "CCHMC",
-                      "~/Dropbox/IMMPUTE/Imputation Scoring/FHCRC/Experiment 2/PGM conservative Mask_None/MATCH_out.txt", "FHCRC",
-                      "~/Dropbox/IMMPUTE/Imputation Scoring/MCRI/Experiment 2/PGM conservative Mask_None/MATCH_out.txt", "MCRI",
-                      "~/Dropbox/IMMPUTE/Imputation Scoring/UWASH/Experiment2/PGM conservative Mask_None/MATCH_out.txt", "UWASH"),
+filePaths <- matrix(c("~/Dropbox/IMMPUTE/Imputation Scoring/CCHMC/SVM AI/Experiment 2/Score_2F_NoMask/MATCH_out.txt", "CCHMC",
+                      "~/Dropbox/IMMPUTE/Imputation Scoring/FHCRC/Experiment 2/Score_2F_NoMask/MATCH_out.txt", "FHCRC",
+                      "~/Dropbox/IMMPUTE/Imputation Scoring/MCRI/Experiment 2/Score_2F_NoMask/MATCH_out.txt", "MCRI",
+                      "~/Dropbox/IMMPUTE/Imputation Scoring/UWASH/Experiment 2/Score_2F_NoMask/MATCH_out.txt", "UWASH"),
                     ncol = 2, byrow = T)
 #"~/Dropbox/IMMPUTE/Imputation Scoring/BROAD/Official/4D/PGM conservative Mask_None/MATCH_out.txt", "BROAD",
 
