@@ -82,13 +82,13 @@ data_allele.pQC <- ddply(data_allele_0.pQC, ~ allele, function(df) {
 
 ##Do the same for the preMerge SNPs
 data_allele_0.pM <- do.call(rbind, 
-                             lapply(names(GenePosition_hg19), 
-                                    function(allele_i) { 
-                                      range_i <- GenePosition_hg19[[allele_i]] + c(-500, 500)
-                                      within(data.frame(allele = allele_i, 
-                                                        KGSNPs.preMerge[isBtwn(KGSNPs.preMerge$snp.position, range_i),]),
-                                             snp.distance <- snp.position - genesDf[genesDf$allele == allele_i, "x"])
-                                    }))
+                            lapply(names(GenePosition_hg19), 
+                                   function(allele_i) { 
+                                     range_i <- GenePosition_hg19[[allele_i]] + c(-500, 500)
+                                     within(data.frame(allele = allele_i, 
+                                                       KGSNPs.preMerge[isBtwn(KGSNPs.preMerge$snp.position, range_i),]),
+                                            snp.distance <- snp.position - genesDf[genesDf$allele == allele_i, "x"])
+                                   }))
 data_allele.pM <- ddply(data_allele_0.pM, ~ allele, function(df) {
   df2 <- df[order(abs(df$snp.distance)),]
   df3 <- data.frame(df2, snp.order = 1:nrow(df2), 
@@ -174,16 +174,25 @@ dev.off()
 
 pdf("/media/FD/Dropbox/IMMPUTE/Side_Investigations/Extra_Fig_SNP_DRB1_1s.pdf", w = 12, h= 8)
 print(ggplot(data = data_allele_0) + 
-  geom_density(data = data_allele_0.pM, aes(x = snp.distance, y=..count../10, alpha = "pre-Merge"), color = "grey30", fill = NA, size = 1,  adjust = 0.1) + #  
-  geom_density(aes(x = snp.distance, y=..count.., alpha = "post-QC"), color = NA, fill = 'grey50', alpha = 0.8, adjust = 0.05) + #  
-  geom_rect(data = genesDf, aes(xmin = xminD, xmax = xmaxD, fill = allele), alpha = 0.3, color = NA, ymin = 0, ymax = Inf-1) + # ymin = -1.2, ymax = -0.2)+ 
-  geom_rect(data = genesDf, aes(xmin = xminD, xmax = xmaxD, fill = allele, color = allele), ymin = -0.3, ymax = -0.1) + # 
-  geom_density(data = data_allele_0.pQC, aes(x = snp.distance, y=..count.., fill = allele, color = allele, alpha = "pre-QC"), size = 0.5,  adjust = 0.05) + #  
-  labs(title = paste("Comparison of SNP density around the four HLA loci, centered on each locus") ,
-       x = "SNP distance to the locus (kbp)", y="SNP density (SNP/kb)", fill = "locus", color = "locus") +
-  #   scale_y_continuous(breaks = NULL) +
-  facet_grid(allele~.) +
-  theme_bw() +
-  scale_alpha_manual("", limits = c( "pre-Merge", "pre-QC", "post-QC"), values = c(1, 0.3, 1))
+        geom_density(data = data_allele_0.pM, aes(x = snp.distance, y=..count../10, alpha = "pre-Merge"), color = "grey30", fill = NA, size = 1,  adjust = 0.1) + #  
+        geom_density(aes(x = snp.distance, y=..count.., alpha = "post-QC"), color = NA, fill = 'grey50', alpha = 0.8, adjust = 0.05) + #  
+        geom_rect(data = genesDf, aes(xmin = xminD, xmax = xmaxD, fill = allele), alpha = 0.3, color = NA, ymin = 0, ymax = Inf-1) + # ymin = -1.2, ymax = -0.2)+ 
+        geom_rect(data = genesDf, aes(xmin = xminD, xmax = xmaxD, fill = allele, color = allele), ymin = -0.3, ymax = -0.1) + # 
+        geom_density(data = data_allele_0.pQC, aes(x = snp.distance, y=..count.., fill = allele, color = allele, alpha = "pre-QC"), size = 0.5,  adjust = 0.05) + #  
+        labs(title = paste("Comparison of SNP density around the four HLA loci, centered on each locus") ,
+             x = "SNP distance to the locus (kbp)", y="SNP density (SNP/kb)", fill = "locus", color = "locus") +
+        #   scale_y_continuous(breaks = NULL) +
+        facet_grid(allele~.) +
+        theme_bw() +
+        scale_alpha_manual("", limits = c( "pre-Merge", "pre-QC", "post-QC"), values = c(1, 0.3, 1))
 )
+dev.off()
+
+pdf("/media/FD/Dropbox/IMMPUTE/Side_Investigations/Extra_Fig_SNP_DRB1_2s.pdf", w = 12, h= 8)
+print(ggplot(data = data_allele) + 
+        geom_line(aes(x = abs(snp.distance), y=cumsnp, fill = allele, color = allele), size = 1) + #  
+        #         geom_line(data = data_allele.pQC, aes(x = abs(snp.distance), y=cumsnp, fill = allele, color = allele), size = 0.5, alpha = 0.5) + #  
+        labs(title = paste("Comparison of SNP cumulative number around the four HLA loci, depending on the distance") ,
+             x = "SNP absolute distance to the locus (kbp)", y="SNP cumulative number", fill = "locus", color = "locus") +
+        theme_bw()  + xlim(0,200) + ylim(0,1300))
 dev.off()

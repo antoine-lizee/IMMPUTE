@@ -73,7 +73,7 @@ g1 <- ggplot(data_subject) + theme_bw(base_size=16) +
   #   geom_hline(y=90, linetype=2, size=0.8, color="grey85") +
   geom_line(aes(x=CR, y=SubsetAccuracy*100, color=Method), size=0.6) +
   #   geom_text(data=locus_data, aes(label=Locus, y=y_text), x=75, size=4.5 ) +
-  geom_point(data=perf0.5_data, aes(x=CR, y=SubsetAccuracy*100, fill=Method), color="black", size=2.5, shape=23) +
+#   geom_point(data=perf0.5_data, aes(x=CR, y=SubsetAccuracy*100, fill=Method), color="black", size=2.5, shape=23) +
   labs(y="Performance (%)", x="Call Rate(%)") +
   #   coord_cartesian(xlim=c(47,103)) +
   scale_x_reverse() +
@@ -102,7 +102,7 @@ g2 <- ggplot(data_subject) + theme_bw(base_size=16) +
   #   geom_hline(y=90, linetype=2, size=0.8, color="grey85") +
   geom_line(aes(x=CR, y=TotAccuracy *100, color=Method), size=0.6) +
   #   geom_text(data=locus_data, aes(label=Locus, y=y_text), x=75, size=4.5 ) +
-  geom_point(data=perf0.5_data, aes(x=CR, y=TotAccuracy*100, fill=Method), color="black", size=2.5, shape=23) +
+#   geom_point(data=perf0.5_data, aes(x=CR, y=TotAccuracy*100, fill=Method), color="black", size=2.5, shape=23) +
   labs(y="Total Accuracy (% of the whole dataset)", x="Call Rate(%)") +
   #   coord_cartesian(xlim=c(47,103)) +
   scale_x_reverse() +
@@ -113,9 +113,9 @@ g3 <- ggplot(data_subject) + theme_bw(base_size=16) +
   #   geom_text(data=locus_data, aes(label="90% Performance", y=y_line_text, x=x_line_text), size=3.5, color="grey60") +
   #   geom_hline(y=90, linetype=2, size=0.8, color="grey85") +
   geom_line(aes(x=CR, y=TotAccuracy *100, color=Method), size=0.6) +
-  geom_line(aes(x=CR, y=SubsetAccuracy*100, color=Method), linetype = "31", size=0.7) +
+  geom_line(aes(x=CR, y=SubsetAccuracy*100, color=Method), alpha = 0.7, linetype = "31", size=0.3) +
   #   geom_text(data=locus_data, aes(label=Locus, y=y_text), x=75, size=4.5 ) +
-  geom_point(data=perf0.5_data, aes(x=CR, y=SubsetAccuracy*100, fill=Method), color="black", size=2.5, shape=23) +
+#   geom_point(data=perf0.5_data, aes(x=CR, y=SubsetAccuracy*100, fill=Method), color="black", size=2.5, shape=23) +
   labs(y="Accuracies (%)", x="Call Rate(%)") +
   #   coord_cartesian(xlim=c(47,103)) +
   scale_x_reverse() +
@@ -127,7 +127,7 @@ g4 <- ggplot(data_subject) + theme_bw(base_size=16) +
   #   geom_hline(y=90, linetype=2, size=0.8, color="grey85") +
   geom_line(aes(x=TotAccuracy *100, y=SubsetAccuracy *100, color=Method), size=0.6) +
   #   geom_text(data=locus_data, aes(label=Locus, y=y_text), x=75, size=4.5 ) +
-  geom_point(data=perf0.5_data, aes(x=TotAccuracy *100, y=SubsetAccuracy *100, fill=Method), color="black", size=2.5, shape=23) +
+#   geom_point(data=perf0.5_data, aes(x=TotAccuracy *100, y=SubsetAccuracy *100, fill=Method), color="black", size=2.5, shape=23) +
   labs(y="Performance (or Subset Accuracy) (%)", x="Total accuracy (%)") +
   #   coord_cartesian(xlim=c(47,103)) +
   scale_x_reverse() +
@@ -203,7 +203,7 @@ areas$y <- c(15, 25, 13, 17)
 g5 <- ggplot(data_subject) + theme_bw(base_size=16) +
   geom_line(aes(x=CR, y=MaxTot *100), color="black", size=0.6) +
   geom_line(aes(x=CR, y=TotAccuracy *100, color=Method), size=0.6) +
-  geom_point(data=perf0.5_data, aes(x=CR, y=TotAccuracy*100, fill=Method), color="black", size=2.5, shape=23) +
+#   geom_point(data=perf0.5_data, aes(x=CR, y=TotAccuracy*100, fill=Method), color="black", size=2.5, shape=23) +
   geom_text(data = areas, aes(label = round(Ratio,3), x = x, y=y), size = rel(3), color = "grey30")+
   labs(y="Total Accuracy (% of the whole dataset)", x="Call Rate(%)") +
   scale_x_reverse() +
