@@ -59,21 +59,21 @@ require(ggplot2)
 require(grid)
 g1 <- ggplot(data) + theme_bw(base_size=11) +
   #   geom_abline(a=1, b=0, linetype=2, size=1.2, color="grey85") +
-  geom_text(data=locus_data, aes(label="90% Performance", y=y_line_text, x=x_line_text), size=3.5, color="grey60") +
+  geom_text(data=locus_data, aes(label="90% Accuracy", y=y_line_text, x=x_line_text), size=3.5, color="grey60") +
   geom_line(aes(x=CR, y=Perf*100, color=Method), size=0.7) +
   facet_grid(row~col, scales="free_y", ) +
-  geom_text(data=locus_data, aes(label=Locus, y=y_text), x=75, size=4.5 ) +
+  geom_text(data=locus_data, aes(label=Locus, y=y_text), x=-75, size=4.5 ) +
   #   geom_point(data=perf0.5_data, aes(x=CR, y=Perf*100), color="black", size=3, shape=23, fill="yellow") +
   geom_point(data=perf0.5_data, aes(x=CR, y=Perf*100, fill=Method), color="black", size=2.5, shape=23) +
   #   scale_shape_manual(values=c(15,19,18,17)) +
-  labs(y="Performance (%)", x="Call Rate(%)") +
+  labs(y="Imputation Accuracy (%)", x="Call Rate (%)") +
   #   scale_y_continuous(expand=c(0,0)) +
   coord_cartesian(xlim=c(47,103)) +
   scale_x_reverse() +
   palette_perso +
-#   scale_color_brewer(type="qual", palette=2) +
+  #   scale_color_brewer(type="qual", palette=2) +
   palette_perso_fill +
-#   scale_fill_brewer(type="qual", palette=2, guide="none") +
+  #   scale_fill_brewer(type="qual", palette=2, guide="none") +
   geom_hline(y=90, linetype=2, size=0.8, color="grey85") +
   theme(strip.background = element_blank(), strip.text = element_blank(),
         panel.grid.major = element_line(colour = "grey85", size = 0.2),
@@ -99,8 +99,11 @@ png("/media/FD/Dropbox/IMMPUTE/Manuscript/Figure_2_2cols.png", w=18.3, h=12, uni
 print(g1)
 dev.off()
 
-# tiff("/media/FD/Dropbox/IMMPUTE/Manuscript/Figure_2.tiff",w=12, h=8, units="in", res=300)
 tiff("/media/FD/Dropbox/IMMPUTE/Manuscript/Figure_2_2cols.tiff", w=18.3, h=12, units="cm", res=300)
+print(g1)
+dev.off()
+
+pdf("/media/FD/Dropbox/IMMPUTE/Manuscript/Figure_2_2cols.pdf", w=cmToInches(18.3), h=cmToInches(12))
 print(g1)
 dev.off()
 
@@ -115,16 +118,16 @@ if (oneColumnRightLegend <- FALSE) {
     #   geom_abline(a=1, b=0, linetype=2, size=1.2, color="grey85") +
     geom_line(aes(x=CR, y=Perf*100, color=Method), size=0.45) +
     facet_grid(row~col, scales="free_y", ) +
-    geom_text(data=locus_data, aes(label=Locus, y=y_text), x=75, size=2.4 ) +
-    geom_text(data=locus_data, aes(label="90% Performance", y=y_line_text, x=x_line_text), size=1.7, color="grey55") +
+    geom_text(data=locus_data, aes(label=Locus, y=y_text), x=-75, size=2.4 ) +
+    geom_text(data=locus_data, aes(label="90% Accuracy", y=y_line_text, x=x_line_text), size=1.7, color="grey55") +
     geom_point(data=perf0.5_data, aes(x=CR, y=Perf*100), color="black", size=1, shape=23, fill="yellow") +
     #   scale_shape_manual(values=c(15,19,18,17)) +
-    labs(y="Performance (%)", x="Call Rate(%)") +
+    labs(y="Imputation Accuracy (%)", x="Call Rate (%)") +
     #   scale_y_continuous(expand=c(0,0)) +
     coord_cartesian(xlim=c(47,103)) +
     scale_x_reverse() +
     palette_perso +
-#     scale_color_brewer(type="qual", palette=2) +
+    #     scale_color_brewer(type="qual", palette=2) +
     geom_hline(y=90, linetype=2, size=0.4, color="grey70") +
     theme(strip.background = element_blank(), strip.text = element_blank(),
           panel.grid.major = element_line(colour = "grey85", size = 0.2),
@@ -165,15 +168,17 @@ g1 <- ggplot(data) + theme_bw(base_size=7) +
   #   geom_abline(a=1, b=0, linetype=2, size=1.2, color="grey85") +
   geom_line(aes(x=CR, y=Perf*100, color=Method), size=0.65) +
   facet_grid(row~col, scales="free_y", ) +
-  geom_text(data=locus_data, aes(label=Locus, y=y_text), x=75, size=2.4 ) +
-  geom_text(data=locus_data, aes(label="90% Performance", y=y_line_text, x=x_line_text), size=2, color="grey55") +
-  geom_point(data=perf0.5_data, aes(x=CR, y=Perf*100), color="black", size=1.5, shape=23, fill="yellow", linewidth = 0.1) +
+  geom_text(data=locus_data, aes(label=Locus, y=y_text), x=-75, size=2.4 ) +
+  geom_text(data=locus_data, aes(label="90% Accuracy", y=y_line_text, x=x_line_text), size=2, color="grey55") +
+  #   geom_point(data=perf0.5_data, aes(x=CR, y=Perf*100), color="black", size=1.5, shape=23, fill="yellow", linewidth = 0.1) + ## YELLOW VERSION
+  geom_point(data=perf0.5_data, aes(x=CR, y=Perf*100, fill = Method), color="black", size=1.5, shape=23, alpha = 0.7, linewidth = 0.1) + 
   #   scale_shape_manual(values=c(15,19,18,17)) +
-  labs(y="Performance (%)", x="Call Rate(%)", colour = "Method:") +
+  labs(y="Imputation Accuracy (%)", x="Call Rate (%)", colour = "Method", fill = "Method") +
   #   scale_y_continuous(expand=c(0,0)) +
   scale_x_reverse() +
   coord_cartesian(xlim=c(47,103)) +
   palette_perso +
+  palette_perso_fill +
   #     scale_color_brewer(type="qual", palette=2) +
   geom_hline(y=90, linetype=2, size=0.4, color="grey70") +
   theme(strip.background = element_blank(), strip.text = element_blank(),
@@ -208,7 +213,9 @@ tiff("/media/FD/Dropbox/IMMPUTE/Manuscript/Figure_2_1col_bottom.tiff", w=8.9, h=
 print(g1)
 dev.off()
 
-
+pdf("/media/FD/Dropbox/IMMPUTE/Manuscript/Figure_2_1col_bottom.pdf", w=cmToInches(8.9), h=cmToInches(7.8))
+print(g1)
+dev.off()
 
 # Old version of the printing --------------------------------------------------
 
@@ -221,21 +228,21 @@ if (oldPrinting <- FALSE) {
   require(grid)
   g1 <- ggplot(data) + theme_bw(base_size=19) +
     #   geom_abline(a=1, b=0, linetype=2, size=1.2, color="grey85") +
-    geom_text(data=locus_data, aes(label="90% Performance", y=y_line_text, x=x_line_text), size=5, color="grey60") +
+    geom_text(data=locus_data, aes(label="90% IA", y=y_line_text, x=x_line_text), size=5, color="grey60") +
     geom_line(aes(x=CR, y=Perf*100, color=Method), size=1) +
     facet_grid(row~col, scales="free_y", ) +
-    geom_text(data=locus_data, aes(label=Locus, y=y_text), x=75, size=9 ) +
+    geom_text(data=locus_data, aes(label=Locus, y=y_text), x=-75, size=9 ) +
     #   geom_point(data=perf0.5_data, aes(x=CR, y=Perf*100), color="black", size=3, shape=23, fill="yellow") +
     geom_point(data=perf0.5_data, aes(x=CR, y=Perf*100, fill=Method), color="black", size=3, shape=23) +
     #   scale_shape_manual(values=c(15,19,18,17)) +
-    labs(y="Performance (%)", x="Call Rate(%)") +
+    labs(y="Imputation Accuracy (%)", x="Call Rate(%)") +
     #   scale_y_continuous(expand=c(0,0)) +
     coord_cartesian(xlim=c(47,103)) +
     scale_x_reverse() +
     palette_perso +
     #     scale_color_brewer(type="qual", palette=2) +
     palette_perso_fill +
-#     scale_fill_brewer(type="qual", palette=2, guide="none") +
+    #     scale_fill_brewer(type="qual", palette=2, guide="none") +
     geom_hline(y=90, linetype=2, size=0.8, color="grey85") +
     theme(strip.background = element_blank(), strip.text = element_blank(),
           panel.grid.major = element_line(colour = "grey85", size = 0.2),
@@ -275,11 +282,11 @@ if (printRealSize.b <- FALSE) {
     #   geom_abline(a=1, b=0, linetype=2, size=1.2, color="grey85") +
     geom_line(aes(x=CR, y=Perf*100, color=Method), size=1) +
     facet_grid(row~col, scales="free_y", ) +
-    geom_text(data=locus_data, aes(label=Locus, y=y_text), x=75, size=5 ) +
-    geom_text(data=locus_data, aes(label="90% Performance", y=y_line_text, x=x_line_text), size=3, color="grey60") +
+    geom_text(data=locus_data, aes(label=Locus, y=y_text), x=-75, size=5 ) +
+    geom_text(data=locus_data, aes(label="90% IA", y=y_line_text, x=x_line_text), size=3, color="grey60") +
     geom_point(data=perf0.5_data, aes(x=CR, y=Perf*100), color="black", size=2, shape=23, fill="yellow") +
     #   scale_shape_manual(values=c(15,19,18,17)) +
-    labs(y="Performance (%)", x="Call Rate(%)") +
+    labs(y="Imputation Accuracy (%)", x="Call Rate(%)") +
     #   scale_y_continuous(expand=c(0,0)) +
     coord_cartesian(xlim=c(47,103)) +
     scale_x_reverse() +
@@ -324,11 +331,11 @@ if (colorSchemes.b <- FALSE) {
       #   geom_abline(a=1, b=0, linetype=2, size=1.2, color="grey85") +
       geom_line(aes(x=CR, y=Perf*100, color=Method), size=1) +
       facet_grid(row~col, scales="free_y", ) +
-      geom_text(data=locus_data, aes(label=Locus, y=y_text), x=75, size=8) +
-      geom_text(data=locus_data, aes(label="90% Performance", y=y_line_text, x=x_line_text), size=4, color="grey60") +
+      geom_text(data=locus_data, aes(label=Locus, y=y_text), x=-75, size=8) +
+      geom_text(data=locus_data, aes(label="90% Accuracy", y=y_line_text, x=x_line_text), size=4, color="grey60") +
       geom_point(data=perf0.5_data, aes(x=CR, y=Perf*100), color="black", size=2, shape=23, fill="yellow") +
       #   scale_shape_manual(values=c(15,19,18,17)) +
-      labs(y="Performance (%)", x="Call Rate(%)") +
+      labs(y="Imputation Accuracy (%)", x="Call Rate (%)") +
       #   scale_y_continuous(expand=c(0,0)) +
       coord_cartesian(xlim=c(47,103)) +
       scale_x_reverse() +

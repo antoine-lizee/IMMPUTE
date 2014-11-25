@@ -10,3 +10,9 @@ palette_perso_fill <- scale_fill_manual(values = colors_perso)
 ## Darken it for alphization down the road.
 palette_perso_fill2 <- scale_fill_manual(values = adjustcolor(colors_perso, r=0.95, g=0.95, b=0.95 ))
 palette_perso2 <- scale_color_manual(values = adjustcolor(colors_perso, r=0.95, g=0.95, b=0.95 ))
+
+
+
+cmToInches <- function(x) {
+  x / 2.54  
+}

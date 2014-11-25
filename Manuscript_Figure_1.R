@@ -32,7 +32,6 @@ dataDf2 <- dcast(dataDf, Locus + Method ~ CallRate )
 
 # Create the helper functions ---------------------------------------------
 
-
 theme_perso <-   theme(
   axis.title = element_text(size = rel(0.9)),
   axis.title.x = element_text(vjust = 0),
@@ -107,7 +106,8 @@ g1 <- ggplot(dataDf2) + theme_bw(base_size=16) +
   geom_point(aes(y=cr80*100, x=cr100*100, shape=Locus, fill=Method), colour = "black", size=2.2, width = 0.4, alpha = 0.7) +
 #   scale_shape_manual(values=c(15,19,18,17)) +
   scale_shape_manual(values=c(21,22,23,24)) +
-  guides(fill = guide_legend(override.aes = list(shape = 25))) +
+  guides(fill = guide_legend(order = 2, override.aes = list(shape = 25)),
+         shape = guide_legend(order = 1)) +
   labs(y="Imputation Accuracy with 80% call rate (%)", x="Imputation Accuracy with 100% call rate (%)") +
   ylim(60, 100) + xlim(60,100) +
   coord_equal() +
@@ -130,13 +130,13 @@ if (colorSchemes.b <- FALSE) {
       geom_abline(a=1, b=0, linetype=2, size=0.6, color="grey80") +
       geom_point(aes(y=cr80*100, x=cr100*100, shape=Locus, fill=Method), colour = "black", size=2.2, width = 0.4, alpha = 0.75) +
       scale_shape_manual(values=c(21,22,23,24)) +
-      guides(colour = guide_legend(override.aes = list(shape = 25))) +
+      guides(colour = guide_legend(order = 2, override.aes = list(shape = 25))) +
       labs(y="Imputation Accuracy with 80% call rate (%)", x="Imputation Accuracy with 100% call rate(%)") +
       ylim(60, 100) + xlim(60,100) +
       coord_equal() +
       palette_perso_fill2 +
       palette_perso2
-      #     scale_color_brewer(type="qual", palette=colorScaleNum)
+#           scale_color_brewer(type="qual", palette=colorScaleNum)
     
     exportFigure1(paste0("colorSchemes/Figure_1_", colorScaleNum), gi)
   }
@@ -167,7 +167,8 @@ if (figure_3_boolean <- T){
     geom_abline(a=1, b=0, linetype=2, size=0.6, color="grey80") +
     geom_point(aes(y=Mask*100, x=None*100, shape=Locus, fill=Method), colour = "black", size=2.2, width = 0.4, alpha = 0.75) +
     scale_shape_manual(values=c(21,22,23,24)) +
-    guides(fill = guide_legend(override.aes = list(shape = 25))) +
+    guides(fill = guide_legend(order = 2, override.aes = list(shape = 25)),
+           shape = guide_legend(order = 1)) +
     labs(y="Imputation Accuracy - Mask Non-Equivalence (%)", x="Imputation Accuracy - No Mask (%)") +
     ylim(60, 100) + xlim(60,100) +
     coord_equal() +
