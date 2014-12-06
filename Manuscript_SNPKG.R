@@ -2,7 +2,7 @@
 source("Manuscript_palettes.R")
 source("Manuscript_Utilities.R")
 
-outputFolder <- "/media/FD/Dropbox/IMMPUTE/Manuscript/Data Tables and Figures/"
+outputFolder <- "/media/FD/Dropbox/IMMPUTE/Manuscript/Data Tables and Figures/All Figures/"
 
 # Get the KG data ---------------------------------------------------------
 
@@ -178,27 +178,29 @@ dev.off()
 
 ## Classic density plot / locus
 
-pdf("/media/FD/Dropbox/IMMPUTE/Side_Investigations/Extra_Fig_SNP_DRB1_1s.pdf", w = 12, h= 8)
-print(ggplot(data = data_allele_0) + 
-        geom_density(data = data_allele_0.pM, aes(x = snp.distance, y=..count../10, alpha = "pre-Merge"), color = "grey30", fill = NA, size = 0.8,  adjust = 0.1) + #  
-        geom_density(aes(x = snp.distance, y=..count.., alpha = "post-QC"), color = NA, fill = 'grey50', alpha = 0.8, adjust = 0.05) + #  
-        geom_rect(data = genesDf, aes(xmin = xminD, xmax = xmaxD, fill = allele), alpha = 0.3, color = NA, ymin = 0, ymax = Inf-1) + # ymin = -1.2, ymax = -0.2)+ 
-        geom_rect(data = genesDf, aes(xmin = xminD, xmax = xmaxD, fill = allele, color = allele), ymin = -0.3, ymax = -0.1) + # 
-        geom_density(data = data_allele_0.pQC, aes(x = snp.distance, y=..count.., fill = allele, color = allele, alpha = "pre-QC"), size = 0.5,  adjust = 0.05) + #  
-        labs(title = paste("Comparison of SNP density around the four HLA loci, centered on each locus") ,
-             x = "SNP distance to the locus (kbp)", y="SNP density (SNP/kb)", fill = "locus", color = "locus") +
-        #   scale_y_continuous(breaks = NULL) +
-        facet_grid(allele~.) +
-        scale_alpha_manual("", limits = c( "pre-Merge", "pre-QC", "post-QC"), values = c(1, 0.3, 1)) +
-        scale_color_brewer(type="qual", palette=2) + 
-        scale_fill_brewer(type="qual", palette=2) +
-        theme_bw()
-      #         theme(legend.key=element_rect(fill='pink'))
-      #         guides()
-)
-dev.off()
 
-# badass version with inset
+gSNP1 <- ggplot(data = data_allele_0) + 
+  geom_density(data = data_allele_0.pM, aes(x = snp.distance, y=..count../10, alpha = "pre-Merge"), color = "grey30", fill = NA, size = 0.8,  adjust = 0.1) + #  
+  geom_density(aes(x = snp.distance, y=..count.., alpha = "post-QC"), color = NA, fill = 'grey50', alpha = 0.8, adjust = 0.05) + #  
+  geom_rect(data = genesDf, aes(xmin = xminD, xmax = xmaxD, fill = allele), alpha = 0.3, color = NA, ymin = 0, ymax = Inf-1) + # ymin = -1.2, ymax = -0.2)+ 
+  geom_rect(data = genesDf, aes(xmin = xminD, xmax = xmaxD, fill = allele, color = allele), ymin = -0.3, ymax = -0.1) + # 
+  geom_density(data = data_allele_0.pQC, aes(x = snp.distance, y=..count.., fill = allele, color = allele, alpha = "pre-QC"), size = 0.5,  adjust = 0.05) + #  
+  labs(title = paste("Comparison of SNP density around the four HLA loci, centered on each locus") ,
+       x = "SNP distance to the locus (kbp)", y="SNP density (SNP/kb)", fill = "locus", color = "locus") +
+  #   scale_y_continuous(breaks = NULL) +
+  facet_grid(allele~.) +
+  scale_alpha_manual("", limits = c( "pre-Merge", "pre-QC", "post-QC"), values = c(1, 0.3, 1)) +
+  scale_color_brewer(type="qual", palette=2) + 
+  scale_fill_brewer(type="qual", palette=2) +
+  theme_bw()
+#         theme(legend.key=element_rect(fill='pink'))
+#         guides()
+
+printGGplot(plot = gSNP1, file = paste0(outputFolder, "Figure_SNP_densityComparison"), format = "pdf", w = 12, h= 8)
+
+
+
+## badass version with inset
 
 b.bigger <- TRUE
 data_locus <- data.frame(allele = unique(data_allele_0$allele), x_text = -485)
@@ -219,11 +221,13 @@ theme_perso_grid <- function(base_size, ...) {
     axis.ticks.margin = unit(0.1, "lines"),
     title = element_text(vjust = 1.2),
     legend.justification = c("left", "bottom"),
-    legend.box = ifelse(b.bigger, "horizontal", "vertical"),
-    legend.box.just = ("top", "left"),
+#     # IF different alignment for legends     
+#     legend.box = ifelse(b.bigger, "horizontal", "vertical"),
+#     legend.box.just = ifelse(b.bigger, "top", "left"),
+    legend.box =  "vertical",
+    legend.box.just = "left",
     legend.position = c(1.01, ifelse(b.bigger, 0.62, 0.5)),
     plot.margin = unit(c(1, ifelse(b.bigger, 8, 6), 0.5, 0.5), "lines") # default @ http://docs.ggplot2.org/dev/vignettes/themes.html
-    
   )
 }
 
@@ -243,7 +247,7 @@ gdens <- ggplot(data = data_allele_0) +
   scale_color_brewer(type="qual", palette=2) + 
   scale_fill_brewer(type="qual", palette=2) +
   theme_perso_grid(base_size = 8) + 
-  geom_text(data = data_locus, aes(label = allele, x = x_text), y= 11, size = 4, hjust = 0) + 
+  geom_text(data = data_locus, aes(label = paste0("HLA-", allele), x = x_text), y= 11, size = 4, hjust = 0) + 
   scale_x_continuous(expand = c(0.02,0.02)) + 
   scale_y_continuous(breaks = c(0,5,10)) +
   guides(alpha = guide_legend(order = 1, override.aes = list(colour = "black", fill = "grey70", shape = 12, linetype = 4, size = 3)), 
@@ -261,7 +265,7 @@ ginset <- ggplot(data = data_allele) +
     axis.text.y = element_text(angle = 90, hjust = 0.5),
     plot.margin = unit(c(0.2,0.2,0.2,0.2), "lines"))
 
-pdf("/media/FD/Dropbox/IMMPUTE/Manuscript/Fig_SNPs.pdf", w=cmToInches(18.3), h=cmToInches(11))
+pdf(paste0(outputFolder, "Figure_SNP_fullWithInset.pdf"), w=cmToInches(18.3), h=cmToInches(11))
 print(gdens)
 #A viewport taking up a fraction of the plot area
 if (b.bigger) {
