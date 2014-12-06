@@ -4,9 +4,16 @@
 # antoine.lizee@ucsf.edu
 
 options(java.parameters="-Xmx4g")
-require(XLConnect)
+library(XLConnect)
+library(ggplot2)
+library(grid)
+library(plyr)
 
 source("Manuscript_palettes.R")
+source("Manuscript_Utilities.R")
+
+inputFolder <- "/media/FD/Dropbox/IMMPUTE/Manuscript/Data Tables and Figures/"
+outputFolder <- "/media/FD/Dropbox/IMMPUTE/Manuscript/Data Tables and Figures/All Figures/"
 
 # Prepare the data --------------------------------------------------------
 
@@ -18,7 +25,7 @@ loci <- c("A", "B", "C", "DRB1")
 
 for (method_ind in 1:length(methods)) {
   for (locus_ind in 1:length(loci)) {
-    df_i <- readWorksheetFromFile("/media/FD/Dropbox/IMMPUTE/Manuscript/Figure 2.xlsx", sheet=method_ind, 
+    df_i <- readWorksheetFromFile(paste0(inputFolder, "Figure 2.xlsx"), sheet=method_ind, 
                                   startCol=locus_ind*4-3, endCol=locus_ind*4-1, startRow=3,
                                   header=F, rownames=F)
     data <- rbind(data, data.frame(df_i, Locus=loci[locus_ind], Method=methods[method_ind]))
@@ -44,7 +51,7 @@ locus_data <- giveRowAndCols(locus_data)
 locus_data$y_text <- ifelse(locus_data$row-1, 98, 99.5)
 locus_data$x_line_text <- ifelse(locus_data$row-1, 85, 65)
 locus_data$y_line_text <- ifelse(locus_data$row-1, 91.8, 90.5)
-require(plyr)
+
 perf0.5_data <- ddply(data, ~ Locus + Method, function(df) df[which.min(abs(df$Threshold-0.5)),c("CR", "Perf")])
 perf0.5_data <- giveRowAndCols(perf0.5_data)
 
@@ -55,8 +62,6 @@ perf0.5_data <- giveRowAndCols(perf0.5_data)
 
 ## Print two columns
 
-require(ggplot2)
-require(grid)
 g1 <- ggplot(data) + theme_bw(base_size=11) +
   #   geom_abline(a=1, b=0, linetype=2, size=1.2, color="grey85") +
   geom_text(data=locus_data, aes(label="90% Accuracy", y=y_line_text, x=x_line_text), size=3.5, color="grey60") +
@@ -93,27 +98,10 @@ g1 <- ggplot(data) + theme_bw(base_size=11) +
         #         legend.background = element_rect(colour = "black"), # DEBUG ONLY
         plot.margin = unit(c(0.1, 0.5, 0.6, 0.5), "lines")) ## INTERACTS WITH LEGEND MARGIN on the right, for the second element
 
-# png("/media/FD/Dropbox/IMMPUTE/Manuscript/Figure_2.png", w=8.00, h=6.5, units="in", res=300)
-png("/media/FD/Dropbox/IMMPUTE/Manuscript/Figure_2_2cols.png", w=18.3, h=12, units="cm", res=300)
-# X11(w=12, h=8)
-print(g1)
-dev.off()
-
-tiff("/media/FD/Dropbox/IMMPUTE/Manuscript/Figure_2_2cols.tiff", w=18.3, h=12, units="cm", res=300)
-print(g1)
-dev.off()
-
-pdf("/media/FD/Dropbox/IMMPUTE/Manuscript/Figure_2_2cols.pdf", w=cmToInches(18.3), h=cmToInches(12))
-print(g1)
-dev.off()
+printGGplot(g1, paste0(outputFolder, "Figure_AllelesAcc_2cols"), w=18.3, h=12, units="cm", res=300)
 
 ####
 if (oneColumnRightLegend <- FALSE) {
-  # png("/media/FD/Dropbox/IMMPUTE/Manuscript/Figure_2.png", w=8.00, h=6.5, units="in", res=300)
-  png("/media/FD/Dropbox/IMMPUTE/Manuscript/Figure_2_1col.png", w=8.9, h=6, units="cm", res=300)
-  # X11(w=6, h=4)
-  require(ggplot2)
-  require(grid)
   g1 <- ggplot(data) + theme_bw(base_size=7) +
     #   geom_abline(a=1, b=0, linetype=2, size=1.2, color="grey85") +
     geom_line(aes(x=CR, y=Perf*100, color=Method), size=0.45) +
@@ -151,19 +139,10 @@ if (oneColumnRightLegend <- FALSE) {
           axis.ticks = element_line(size = 0.1),
           axis.ticks.length = unit(0.15, "lines"))
   
-  print(g1)
-  dev.off()
-  
-  tiff("/media/FD/Dropbox/IMMPUTE/Manuscript/Figure_2_1col.tiff", w=8.9, h=6, units="cm", res=300)
-  print(g1)
-  dev.off()
+  printGGplot(g1, paste0(outputFolder, "Figure_AllelesAcc_1col"),  w=8.9, h=6, units="cm", res=300)
 }
 ####
 
-# png("/media/FD/Dropbox/IMMPUTE/Manuscript/Figure_2.png", w=8.00, h=6.5, units="in", res=300)
-
-require(ggplot2)
-require(grid)
 g1 <- ggplot(data) + theme_bw(base_size=7) +
   #   geom_abline(a=1, b=0, linetype=2, size=1.2, color="grey85") +
   geom_line(aes(x=CR, y=Perf*100, color=Method), size=0.65) +
@@ -204,119 +183,7 @@ g1 <- ggplot(data) + theme_bw(base_size=7) +
         axis.ticks = element_line(size = 0.1),
         axis.ticks.length = unit(0.15, "lines"))
 
-png("/media/FD/Dropbox/IMMPUTE/Manuscript/Figure_2_1col_bottom.png", w=8.9, h=7.8, units="cm", res=300)
-# X11(w=6, h=4)
-print(g1)
-dev.off()
-
-tiff("/media/FD/Dropbox/IMMPUTE/Manuscript/Figure_2_1col_bottom.tiff", w=8.9, h=7.8, units="cm", res=300)
-print(g1)
-dev.off()
-
-pdf("/media/FD/Dropbox/IMMPUTE/Manuscript/Figure_2_1col_bottom.pdf", w=cmToInches(8.9), h=cmToInches(7.8))
-print(g1)
-dev.off()
-
-# Old version of the printing --------------------------------------------------
-
-if (oldPrinting <- FALSE) {
-  ## Print one colum
-  # png("/media/FD/Dropbox/IMMPUTE/Manuscript/Figure_2.png", w=8.00, h=6.5, units="in", res=300)
-  png("/media/FD/Dropbox/IMMPUTE/Manuscript/Figure_2.png", w=12, h=8, units="in", res=300)
-  # X11(w=12, h=8)
-  require(ggplot2)
-  require(grid)
-  g1 <- ggplot(data) + theme_bw(base_size=19) +
-    #   geom_abline(a=1, b=0, linetype=2, size=1.2, color="grey85") +
-    geom_text(data=locus_data, aes(label="90% IA", y=y_line_text, x=x_line_text), size=5, color="grey60") +
-    geom_line(aes(x=CR, y=Perf*100, color=Method), size=1) +
-    facet_grid(row~col, scales="free_y", ) +
-    geom_text(data=locus_data, aes(label=Locus, y=y_text), x=-75, size=9 ) +
-    #   geom_point(data=perf0.5_data, aes(x=CR, y=Perf*100), color="black", size=3, shape=23, fill="yellow") +
-    geom_point(data=perf0.5_data, aes(x=CR, y=Perf*100, fill=Method), color="black", size=3, shape=23) +
-    #   scale_shape_manual(values=c(15,19,18,17)) +
-    labs(y="Imputation Accuracy (%)", x="Call Rate(%)") +
-    #   scale_y_continuous(expand=c(0,0)) +
-    coord_cartesian(xlim=c(47,103)) +
-    scale_x_reverse() +
-    palette_perso +
-    #     scale_color_brewer(type="qual", palette=2) +
-    palette_perso_fill +
-    #     scale_fill_brewer(type="qual", palette=2, guide="none") +
-    geom_hline(y=90, linetype=2, size=0.8, color="grey85") +
-    theme(strip.background = element_blank(), strip.text = element_blank(),
-          panel.grid.major = element_line(colour = "grey85", size = 0.2),
-          axis.title.x = element_text(vjust = 0),
-          axis.title.y = element_text(vjust = 0.4, angle=90),
-          panel.border = element_rect(fill=NA, colour="grey40", size=0.5),
-          #         panel.background = element_rect(fill = "grey98", color = NA),
-          #         panel.margin = unit(0.25, "lines"), # DEFAULT is good
-          #         plot.title = element_blank(), # USELESS if no title specified
-          legend.margin = unit(-1.5, "lines"), 
-          legend.text = element_text(size = rel(0.8)),
-          legend.key = element_rect(colour = NA),
-          legend.key.width = unit(1.0, "lines"),
-          legend.key.width = unit(1.5, "lines"),
-          legend.title = element_blank(), #element_text(size = rel(0.8), face = "bold", hjust = 0),
-          legend.title.align = 0.2,
-          #         legend.background = element_rect(colour = "black"), # DEBUG ONLY
-          plot.margin = unit(c(0.1, 0.5, 0.6, 0.5), "lines")) ## INTERACTS WITH LEGEND MARGIN on the right, for the second element
-  
-  print(g1)
-  dev.off()
-  
-  # tiff("/media/FD/Dropbox/IMMPUTE/Manuscript/Figure_2.tiff",w=12, h=8, units="in", res=300)
-  tiff("/media/FD/Dropbox/IMMPUTE/Manuscript/Figure_2.tiff",w=12, h=8, units="in", res=300)
-  print(g1)
-  dev.off()
-  
-}
-
-if (printRealSize.b <- FALSE) {
-  # png("/media/FD/Dropbox/IMMPUTE/Manuscript/Figure_2.png", w=8.00, h=6.5, units="in", res=300)
-  png("/media/FD/Dropbox/IMMPUTE/Manuscript/Figure_2_realsize.png", w=6, h=4, units="in", res=300)
-  # X11(w=6, h=4)
-  require(ggplot2)
-  require(grid)
-  g1 <- ggplot(data) + theme_bw(base_size=12) +
-    #   geom_abline(a=1, b=0, linetype=2, size=1.2, color="grey85") +
-    geom_line(aes(x=CR, y=Perf*100, color=Method), size=1) +
-    facet_grid(row~col, scales="free_y", ) +
-    geom_text(data=locus_data, aes(label=Locus, y=y_text), x=-75, size=5 ) +
-    geom_text(data=locus_data, aes(label="90% IA", y=y_line_text, x=x_line_text), size=3, color="grey60") +
-    geom_point(data=perf0.5_data, aes(x=CR, y=Perf*100), color="black", size=2, shape=23, fill="yellow") +
-    #   scale_shape_manual(values=c(15,19,18,17)) +
-    labs(y="Imputation Accuracy (%)", x="Call Rate(%)") +
-    #   scale_y_continuous(expand=c(0,0)) +
-    coord_cartesian(xlim=c(47,103)) +
-    scale_x_reverse() +
-    scale_color_brewer(type="qual", palette=2) +
-    geom_hline(y=90, linetype=2, size=0.8, color="grey85") +
-    theme(strip.background = element_blank(), strip.text = element_blank(),
-          panel.grid.major = element_line(colour = "grey85", size = 0.2),
-          axis.title.x = element_text(vjust = 0),
-          axis.title.y = element_text(vjust = 0.4, angle=90),
-          panel.border = element_rect(fill=NA, colour="grey60"),
-          #         panel.background = element_rect(fill = "grey98", color = NA),
-          #         panel.margin = unit(0.25, "lines"), # DEFAULT is good
-          #         plot.title = element_blank(), # USELESS if no title specified
-          legend.margin = unit(-2, "lines"), 
-          legend.text = element_text(size = rel(0.8)),
-          legend.key = element_rect(colour = NA),
-          legend.key.width = unit(1.0, "lines"),
-          legend.title = element_text(size = rel(0.8), face = "bold", hjust = 0),
-          legend.title.align = 0.2,
-          #         legend.background = element_rect(colour = "black"), # DEBUG ONLY
-          plot.margin = unit(c(0.1, 0.5, 0.6, 0.5), "lines")) ## INTERACTS WITH LEGEND MARGIN on the right, for the second element
-  
-  print(g1)
-  dev.off()
-  
-  tiff("/media/FD/Dropbox/IMMPUTE/Manuscript/Figure_2_realsize.tiff",w=6, h=4, units="in", res=300)
-  print(g1)
-  dev.off()
-  
-}
+printGGplot(g1, paste0(outputFolder, "Figure_AllelesAcc_1col_bottom"), w=8.9, h=7.8, units="cm", res=300)
 
 
 # Try different color schemes ---------------------------------------------
@@ -324,7 +191,7 @@ if (printRealSize.b <- FALSE) {
 if (colorSchemes.b <- FALSE) {
   
   tryColorScheme <- function(colorScaleNum){
-    png(paste0("/media/FD/Dropbox/IMMPUTE/Manuscript/colorSchemes/Figure_2_", colorScaleNum, ".png"), w=8.00, h=7.20, units="in", res=300)
+    png(paste0(outputFolder,"colorSchemes/Figure_2_", colorScaleNum, ".png"), w=8.00, h=7.20, units="in", res=300)
     require(ggplot2)
     
     g1 <- ggplot(data) + theme_bw(base_size=16) +

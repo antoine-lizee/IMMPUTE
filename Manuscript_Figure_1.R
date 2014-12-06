@@ -11,6 +11,10 @@ library(reshape2)
 source("geom_point_width_modified.R")
 
 source("Manuscript_palettes.R")
+source("Manuscript_Utilities.R")
+
+inputFolder <- "/media/FD/Dropbox/IMMPUTE/Manuscript/Data Tables and Figures/"
+outputFolder <- "/media/FD/Dropbox/IMMPUTE/Manuscript/Data Tables and Figures/All Figures/"
 
 # Preapre the data --------------------------------------------------------
 
@@ -18,7 +22,7 @@ source("Manuscript_palettes.R")
 methods <- c("HIBAG", "MAGPrediction", "e-HLA", "HLA*IMP:02")
 loci <- c("A", "B", "C", "DRB1")
 
-data <- data.matrix(readWorksheetFromFile("/media/FD/Dropbox/IMMPUTE/Manuscript/Figure 1.xlsx", sheet=1, 
+data <- data.matrix(readWorksheetFromFile(paste0(inputFolder, "Figure 1.xlsx"), sheet=1, 
                                           startRow=3, endRow=7, startCol=4, endCol=12, #Not used
                                           region="D3:L7", header=T, rownames=1))
 
@@ -65,37 +69,8 @@ theme_perso_full <- theme_bw(base_size=16) %+replace% theme_perso
 theme_perso <- theme_bw(base_size=7) %+replace% theme_perso2 #AL OVERWRITE for final output
 
 exportFigure1 <- function (name, ggp) {
-  #   png(paste0("/media/FD/Dropbox/IMMPUTE/Manuscript/", name,".png"), w=620, h=500, res=100) # Original
-  png(paste0("/media/FD/Dropbox/IMMPUTE/Manuscript/", name,".png"),  w=8.9, h=7.2, units="cm", res=300)
-  print(ggp + theme_perso)
-  dev.off()
-  tiff(paste0("/media/FD/Dropbox/IMMPUTE/Manuscript/", name,".tiff"),  w=8.9, h=7.2, units="cm", res=300)
-  print(ggp + theme_perso)
-  dev.off()
+  printGGplot(plot = ggp, file = paste0(outputFolder, name), res=300, w=8.9, h=7.2, units="cm")
 }
-
-exportFigure1Dummy <- function (name, ggp) {
-  png(paste0(name,".png"),  w=8.9, h=7.2, units="cm", res=300)
-  print(ggp + theme_perso)
-  dev.off()
-}
-
-# plotFigure1 <- function (name, dataDfi, export = T) {
-#   if (export) png(paste0("/media/FD/Dropbox/IMMPUTE/Manuscript/", name,".png"), w=620, h=500)
-#   require(ggplot2)
-#   g1 <- ggplot(dataDfi) + theme_perso +
-#     geom_abline(a=1, b=0, linetype=2, size=1.2, color="grey85") +
-#     geom_point(aes(y=cr80*100, x=cr100*100, shape=Locus, color=Method), size=5) +
-#     scale_shape_manual(values=c(15,19,18,17)) +
-#     labs(y="Performance with 80% call rate (%)", x="Performance with 100% call rate(%)") +
-#     ylim(60, 100) + xlim(60,100) +
-#     coord_equal() +
-#     scale_color_brewer(type="qual", palette=3)
-#   
-#   print(g1)
-#   if (export) dev.off()
-# }
-
 
 
 # Create and export the charts --------------------------------------------
@@ -118,7 +93,7 @@ g1 <- ggplot(dataDf2) + theme_bw(base_size=16) +
 # exportFigure1Dummy("Figure_1", g1)
 
 print(g1)
-exportFigure1("Figure_1", g1)
+exportFigure1("Figure_IA_80_100", g1)
 
 
 # Try different color schemes ---------------------------------------------
@@ -153,7 +128,7 @@ if (colorSchemes.b <- FALSE) {
 
 if (figure_3_boolean <- T){
   
-  data <- data.matrix(readWorksheetFromFile("/media/FD/Dropbox/IMMPUTE/Manuscript/Figure 3.xlsx", sheet=1, 
+  data <- data.matrix(readWorksheetFromFile(paste0(inputFolder, "Figure 3.xlsx"), sheet=1, 
                                             region="D3:L7", header=T, rownames=1))
   
   data2 <- array(c(data[,1:4 *2-1], data[,1:4 *2]), c(4,4,2))
@@ -177,6 +152,6 @@ if (figure_3_boolean <- T){
     #     scale_color_brewer(type="qual", palette=2)
   
   print(g2)
-  exportFigure1("Figure_3", g2)
+  exportFigure1("Figure_IA_Mask_NoMask", g2)
 }
 

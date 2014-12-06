@@ -8,6 +8,9 @@ require(XLConnect)
 
 source("Manuscript_palettes.R")
 
+inputFolder <- "/media/FD/Dropbox/IMMPUTE/Manuscript/Data Tables and Figures/"
+outputFolder <- "/media/FD/Dropbox/IMMPUTE/Manuscript/Data Tables and Figures/"
+
 # Prepare the data --------------------------------------------------------
 
 data <- NULL
@@ -18,7 +21,7 @@ loci <- c("A", "B", "C", "DRB1")
 
 for (method_ind in 1:length(methods)) {
   for (locus_ind in 1:length(loci)) {
-    df_i <- readWorksheetFromFile("/media/FD/Dropbox/IMMPUTE/Manuscript/Figure 2.xlsx", sheet=method_ind, 
+    df_i <- readWorksheetFromFile(paste0(inputFolder, "Figure 2.xlsx"), sheet=method_ind, 
                                   startCol=locus_ind*4-3, endCol=locus_ind*4-1, startRow=3,
                                   header=F, rownames=F)
     data <- rbind(data, data.frame(df_i, Locus=loci[locus_ind], Method=methods[method_ind]))
@@ -93,6 +96,6 @@ g1b <- ggplot(datab) + theme_bw(base_size=11) +
 #         axis.ticks = element_line(size = 0.1),
 #         axis.ticks.length = unit(0.15, "lines"))
 
-png("/media/FD/Dropbox/IMMPUTE/Manuscript/Figure_Perf_Recall.png", w=12, h=8, units="cm", res=300)
+png(paste0(outputFolder, "Figure_Perf_Recall.png"), w=12, h=8, units="cm", res=300)
 print(g1b)
 dev.off()

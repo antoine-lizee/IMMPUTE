@@ -1,5 +1,8 @@
 
 source("Manuscript_palettes.R")
+source("Manuscript_Utilities.R")
+
+outputFolder <- "/media/FD/Dropbox/IMMPUTE/Manuscript/Data Tables and Figures/"
 
 # Get the KG data ---------------------------------------------------------
 
@@ -38,7 +41,6 @@ KGSNPs.preQC$snp.position <- KGSNPs.preQC$snp.position/1000
 KGSNPs.preMerge <- read.table("~/Dropbox/IMMPUTE/Side_Investigations/mhcKG_pre_QC/KG_MHCSnps.bim")[,c(2,4)]
 colnames(KGSNPs.preMerge) <- c("snp.id", "snp.position")
 KGSNPs.preMerge$snp.position <- KGSNPs.preMerge$snp.position/1000
-
 
 
 # Prepare the data --------------------------------------------------------
@@ -153,7 +155,7 @@ gp$dist_cum_abs <- ggplot(data = data_allele) +
   theme_bw() 
 # gp$dist_cum_abs
 
-pdf("/media/FD/Dropbox/IMMPUTE/Side_Investigations/Extra_Fig_SNP_DRB1.pdf", w = 12, h= 8)
+pdf(paste0(outputFolder, "Figures_fullSNPStudy.pdf"), w = 12, h= 8)
 dummy <- lapply(gp, print)
 print(ggplot(data = data_allele_0) + 
         geom_density(aes(x = snp.distance, y=..count.., alpha = "post-QC"), color = NA, fill = 'grey50', alpha = 0.8, adjust = 0.02) + #  
@@ -209,6 +211,7 @@ theme_perso_grid <- function(base_size, ...) {
     axis.title.y = element_text(vjust = 1, angle = 90),
     strip.background = element_blank(), strip.text = element_blank(),
     legend.text = element_text(size = rel(0.9)),
+    legend.title = element_text(size = rel(0.95)),
     legend.key = element_rect(colour = NA),
     legend.key.height = unit(0.8, "lines"),
     legend.key.width = unit(0.8, "lines"),
@@ -217,7 +220,7 @@ theme_perso_grid <- function(base_size, ...) {
     title = element_text(vjust = 1.2),
     legend.justification = c("left", "bottom"),
     legend.box = ifelse(b.bigger, "horizontal", "vertical"),
-    legend.box.just = "left",
+    legend.box.just = ("top", "left"),
     legend.position = c(1.01, ifelse(b.bigger, 0.62, 0.5)),
     plot.margin = unit(c(1, ifelse(b.bigger, 8, 6), 0.5, 0.5), "lines") # default @ http://docs.ggplot2.org/dev/vignettes/themes.html
     
@@ -231,17 +234,21 @@ gdens <- ggplot(data = data_allele_0) +
   geom_rect(data = genesDf, aes(xmin = xminD, xmax = xmaxD, fill = allele, color = allele), ymin = -0.3, ymax = -0.1) + # 
   geom_density(data = data_allele_0.pQC, aes(x = snp.distance, y=..count.., fill = allele, color = allele, alpha = "pre-QC"), size = 0.3,  adjust = 0.05) + #  
   labs(title = paste("Comparison of SNP density around the four HLA loci, centered on each locus") ,
-       x = "SNP distance to the locus (kbp)", y="SNP density (SNP/kb)", fill = "Locus", color = "Locus", alpha = "Status \nof the SNPs") +
+       x = "SNP distance to the locus (kbp)", y="SNP density (SNP/kb)", fill = "Locus", color = "Locus", 
+       alpha = "Status \nof the SNPs", linetype = "Status \nof the SNPs") +
   #   scale_y_continuous(breaks = NULL) +
   facet_grid(allele~.) +
-  scale_alpha_manual(limits = c( "pre-Merge", "pre-QC", "post-QC"), values = c(1, 0.3, 1)) +
+  scale_alpha_manual(limits = c( "pre-Merge", "pre-QC", "post-QC"), values = c(0, 0.3, 1)) +
+  scale_linetype_manual(limits = c( "pre-Merge", "pre-QC", "post-QC"), values = c(1, 1, 0)) +
   scale_color_brewer(type="qual", palette=2) + 
   scale_fill_brewer(type="qual", palette=2) +
   theme_perso_grid(base_size = 8) + 
   geom_text(data = data_locus, aes(label = allele, x = x_text), y= 11, size = 4, hjust = 0) + 
   scale_x_continuous(expand = c(0.02,0.02)) + 
   scale_y_continuous(breaks = c(0,5,10)) +
-  guides(alpha = guide_legend(order = 1), fill = guide_legend(order = 2), color = guide_legend(order = 2))
+  guides(alpha = guide_legend(order = 1, override.aes = list(colour = "black", fill = "grey70", shape = 12, linetype = 4, size = 3)), 
+         linetype = guide_legend(order = 1),
+         fill = guide_legend(order = 2), color = guide_legend(order = 2))
 
 ginset <- ggplot(data = data_allele) + 
   geom_line(aes(x = abs(snp.distance), y=cumsnp, fill = allele, color = allele), size = 0.8) + #  
@@ -254,11 +261,11 @@ ginset <- ggplot(data = data_allele) +
     axis.text.y = element_text(angle = 90, hjust = 0.5),
     plot.margin = unit(c(0.2,0.2,0.2,0.2), "lines"))
 
-pdf("/media/FD/Dropbox/IMMPUTE/Manuscript/Fig_SNPs.pdf", w=cmToInches(18.3), h=cmToInches(12))
+pdf("/media/FD/Dropbox/IMMPUTE/Manuscript/Fig_SNPs.pdf", w=cmToInches(18.3), h=cmToInches(11))
 print(gdens)
 #A viewport taking up a fraction of the plot area
 if (b.bigger) {
-  vp <- viewport(width = 0.23, height = 0.33, x = 0.750, y = 0.13, just = c("left", "bottom"))
+  vp <- viewport(width = 0.23, height = 0.36, x = 0.750, y = 0.13, just = c("left", "bottom"))
 } else {
   vp <- viewport(width = 0.18, height = 0.27, x = 0.815, y = 0.15, just = c("left", "bottom"))
 }
