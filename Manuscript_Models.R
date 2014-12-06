@@ -4,6 +4,8 @@ require(plyr)
 require(aod)
 
 source("Manuscript_palettes.R")
+source("Manuscript_Utilities.R")
+outputFolder <- "/media/FD/Dropbox/IMMPUTE/Manuscript/Data Tables and Figures/All Figures/"
 
 # Import MATCH data from dropbox -------------------------------------------
 
@@ -392,19 +394,19 @@ MODR.intercept <- glm(data = matchData4R, cbind(success, fail) ~ ., family = bin
 
 # Final output ------------------------------------------------------------
 
-ggsave(filename=paste0("/media/FD/Dropbox/IMMPUTE/Manuscript/", "SupplFigure_1",".png"),
+printGGplot(file=paste0(outputFolder, "Figure_Model_All"),
        plot=plotModelColors(MOD.intercept),
-       w=8.9*2, h=7.2*2, units="cm", dpi=300/2)
+       w=8.9*2, h=7.2*2, units="cm", res=300/2)
 
-ggsave(filename=paste0("/media/FD/Dropbox/IMMPUTE/Manuscript/", "SupplFigure_2",".png"), 
+printGGplot(file=paste0(outputFolder, "Figure_Model_Euro"), 
        plot=plotModelColors(MODEURO.intercept),
-       w=8.9*2, h=7.2*2, units="cm", dpi=300/2)
+       w=8.9*2, h=7.2*2, units="cm", res=300/2)
 
 ggmod <- ggplot_build(plotModelColors(MODEURO.intercept))
 ylims <- c( min(ggmod$data[[2]]$ymin), max(ggmod$data[[2]]$ymax))
-ggsave(filename=paste0("/media/FD/Dropbox/IMMPUTE/Manuscript/", "SupplFigure_1_scaled",".png"),
+printGGplot(file=paste0(outputFolder, "Figure_Model_All_scaled"),
        plot=plotModelColors(MOD.intercept, ylims),
-       w=8.9*2, h=7.2*2, units="cm", dpi=300/2)
+       w=8.9*2, h=7.2*2, units="cm", res=300/2)
 
 MODEURO.grouped <- glm(data = matchData4Euros, cbind(success, fail) ~ locus.B+ locus.DRB1 + (locus.C|locus.A)  + method.HIBAG + (`method.HLA*IMP:02`|`method.e-HLA`|method.MAGPrediction), family = binomial(logit))
 names(MODEURO.grouped$coefficients)[c(4,6)] <- c("locus.AorC", "method.NON-HIBAG")
@@ -422,7 +424,7 @@ ggsave(filename=paste0("/media/FD/Dropbox/IMMPUTE/Modeling/", "SupplFigure_Model
        w=8.9*2, h=7.2*2, units="cm", dpi=300/2)
 
 
-# Output model coefficients for thesupplementary table --------------------
+# Output model coefficients for the supplementary table --------------------
 
 getCoeffs <- function(model) {
   cbind(round(coefficients(model),2), round(confint(model),2))

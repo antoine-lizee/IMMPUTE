@@ -67,7 +67,7 @@ g1 <- ggplot(data) + theme_bw(base_size=11) +
   geom_text(data=locus_data, aes(label="90% Accuracy", y=y_line_text, x=x_line_text), size=3.5, color="grey60") +
   geom_line(aes(x=CR, y=Perf*100, color=Method), size=0.7) +
   facet_grid(row~col, scales="free_y", ) +
-  geom_text(data=locus_data, aes(label=Locus, y=y_text), x=-75, size=4.5 ) +
+  geom_text(data=locus_data, aes(label=paste0("HLA-",Locus), y=y_text), x=-75, size=4.5 ) +
   #   geom_point(data=perf0.5_data, aes(x=CR, y=Perf*100), color="black", size=3, shape=23, fill="yellow") +
   geom_point(data=perf0.5_data, aes(x=CR, y=Perf*100, fill=Method), color="black", size=2.5, shape=23) +
   #   scale_shape_manual(values=c(15,19,18,17)) +
@@ -106,7 +106,7 @@ if (oneColumnRightLegend <- FALSE) {
     #   geom_abline(a=1, b=0, linetype=2, size=1.2, color="grey85") +
     geom_line(aes(x=CR, y=Perf*100, color=Method), size=0.45) +
     facet_grid(row~col, scales="free_y", ) +
-    geom_text(data=locus_data, aes(label=Locus, y=y_text), x=-75, size=2.4 ) +
+    geom_text(data=locus_data, aes(label=paste0("HLA-",Locus), y=y_text), x=-75, size=2.4 ) +
     geom_text(data=locus_data, aes(label="90% Accuracy", y=y_line_text, x=x_line_text), size=1.7, color="grey55") +
     geom_point(data=perf0.5_data, aes(x=CR, y=Perf*100), color="black", size=1, shape=23, fill="yellow") +
     #   scale_shape_manual(values=c(15,19,18,17)) +
@@ -147,7 +147,7 @@ g1 <- ggplot(data) + theme_bw(base_size=7) +
   #   geom_abline(a=1, b=0, linetype=2, size=1.2, color="grey85") +
   geom_line(aes(x=CR, y=Perf*100, color=Method), size=0.65) +
   facet_grid(row~col, scales="free_y", ) +
-  geom_text(data=locus_data, aes(label=Locus, y=y_text), x=-75, size=2.4 ) +
+  geom_text(data=locus_data, aes(label=paste0("HLA-",Locus), y=y_text), x=-75, size=2.4 ) +
   geom_text(data=locus_data, aes(label="90% Accuracy", y=y_line_text, x=x_line_text), size=2, color="grey55") +
   #   geom_point(data=perf0.5_data, aes(x=CR, y=Perf*100), color="black", size=1.5, shape=23, fill="yellow", linewidth = 0.1) + ## YELLOW VERSION
   geom_point(data=perf0.5_data, aes(x=CR, y=Perf*100, fill = Method), color="black", size=1.5, shape=23, alpha = 0.7, linewidth = 0.1) + 
@@ -198,7 +198,7 @@ if (colorSchemes.b <- FALSE) {
       #   geom_abline(a=1, b=0, linetype=2, size=1.2, color="grey85") +
       geom_line(aes(x=CR, y=Perf*100, color=Method), size=1) +
       facet_grid(row~col, scales="free_y", ) +
-      geom_text(data=locus_data, aes(label=Locus, y=y_text), x=-75, size=8) +
+      geom_text(data=locus_data, aes(label=paste0("HLA-",Locus), y=y_text), x=-75, size=8) +
       geom_text(data=locus_data, aes(label="90% Accuracy", y=y_line_text, x=x_line_text), size=4, color="grey60") +
       geom_point(data=perf0.5_data, aes(x=CR, y=Perf*100), color="black", size=2, shape=23, fill="yellow") +
       #   scale_shape_manual(values=c(15,19,18,17)) +

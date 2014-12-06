@@ -6,11 +6,13 @@
 options(java.parameters="-Xmx4g")
 library(XLConnect)
 library(ggplot2)
-require(reshape2)
-require(plyr)
+library(reshape2)
+library(plyr)
+library(grid)
 
 source("Manuscript_palettes.R")
-
+source("Manuscript_Utilities.R")
+outputFolder <- "/media/FD/Dropbox/IMMPUTE/Manuscript/Data Tables and Figures/All Figures/"
 
 # Prepare the data --------------------------------------------------------
 
@@ -51,7 +53,6 @@ for (method_ind in 1:length(methods)) {
 ll <- levels(data_subject$Method)
 data_subject$Method <- factor(data_subject$Method, levels = ll[order(as.character(ll))])
 
-require(plyr)
 perf0.5_data <- ddply(data_subject, ~ Method, function(df) df[which.min(abs(df$Threshold-0.5)),c("CR", "SubsetAccuracy", "TotAccuracy")])
 
 giveRowAndCols <- function(df) {
@@ -65,16 +66,13 @@ perf0.5_data <- giveRowAndCols(perf0.5_data)
 
 # Plots -------------------------------------------------
 
-require(ggplot2)
-require(grid)
-
 g1 <- ggplot(data_subject) + theme_bw(base_size=16) +
   #   geom_text(data=locus_data, aes(label="90% Performance", y=y_line_text, x=x_line_text), size=3.5, color="grey60") +
   #   geom_hline(y=90, linetype=2, size=0.8, color="grey85") +
   geom_line(aes(x=CR, y=SubsetAccuracy*100, color=Method), size=0.6) +
   #   geom_text(data=locus_data, aes(label=Locus, y=y_text), x=75, size=4.5 ) +
 #   geom_point(data=perf0.5_data, aes(x=CR, y=SubsetAccuracy*100, fill=Method), color="black", size=2.5, shape=23) +
-  labs(y="Performance (%)", x="Call Rate(%)") +
+  labs(y="Imputation Accuracy (%)", x="Call Rate(%)") +
   #   coord_cartesian(xlim=c(47,103)) +
   scale_x_reverse() +
   palette_perso +
@@ -112,13 +110,16 @@ g2 <- ggplot(data_subject) + theme_bw(base_size=16) +
 g3 <- ggplot(data_subject) + theme_bw(base_size=16) +
   #   geom_text(data=locus_data, aes(label="90% Performance", y=y_line_text, x=x_line_text), size=3.5, color="grey60") +
   #   geom_hline(y=90, linetype=2, size=0.8, color="grey85") +
-  geom_line(aes(x=CR, y=TotAccuracy *100, color=Method), size=0.6) +
-  geom_line(aes(x=CR, y=SubsetAccuracy*100, color=Method), alpha = 0.7, linetype = "31", size=0.3) +
+  geom_line(aes(x=CR, y=TotAccuracy *100, color=Method, linetype = "Global Accuracy", alpha = "Global Accuracy", size="Global Accuracy")) +
+  geom_line(aes(x=CR, y=SubsetAccuracy*100, color=Method, linetype = "Subset Accuracy", alpha =  "Subset Accuracy", size="Subset Accuracy")) +
   #   geom_text(data=locus_data, aes(label=Locus, y=y_text), x=75, size=4.5 ) +
 #   geom_point(data=perf0.5_data, aes(x=CR, y=SubsetAccuracy*100, fill=Method), color="black", size=2.5, shape=23) +
   labs(y="Accuracies (%)", x="Call Rate(%)") +
   #   coord_cartesian(xlim=c(47,103)) +
   scale_x_reverse() +
+  scale_linetype_manual("", values = c("solid", "31")) +
+  scale_alpha_manual("", values = c(1,0.6)) +
+  scale_size_manual("", values = c(0.6,0.3)) +
   palette_perso +
   palette_perso_fill 
 
@@ -128,7 +129,7 @@ g4 <- ggplot(data_subject) + theme_bw(base_size=16) +
   geom_line(aes(x=TotAccuracy *100, y=SubsetAccuracy *100, color=Method), size=0.6) +
   #   geom_text(data=locus_data, aes(label=Locus, y=y_text), x=75, size=4.5 ) +
 #   geom_point(data=perf0.5_data, aes(x=TotAccuracy *100, y=SubsetAccuracy *100, fill=Method), color="black", size=2.5, shape=23) +
-  labs(y="Performance (or Subset Accuracy) (%)", x="Total accuracy (%)") +
+  labs(y="Subset Accuracy (%)", x="Total accuracy (%)") +
   #   coord_cartesian(xlim=c(47,103)) +
   scale_x_reverse() +
   palette_perso +
@@ -171,13 +172,7 @@ theme_perso2 <- theme (
 theme_perso <- theme_bw(base_size=7) %+replace% theme_perso2 #AL OVERWRITE for final output
 
 exportFigure1 <- function (name, ggp) {
-  #   png(paste0("/media/FD/Dropbox/IMMPUTE/Manuscript/", name,".png"), w=620, h=500, res=100) # Original
-  png(paste0("/media/FD/Dropbox/IMMPUTE/Manuscript/", name,".png"),  w=8.9, h=7.2, units="cm", res=300)
-  print(ggp + theme_perso)
-  dev.off()
-  tiff(paste0("/media/FD/Dropbox/IMMPUTE/Manuscript/", name,".tiff"),  w=8.9, h=7.2, units="cm", res=300)
-  print(ggp + theme_perso)
-  dev.off()
+  printGGplot(plot = ggp + theme_perso, file = paste0(outputFolder, name), format = ".pdf", w=8.9, h=7.2, units="cm", res=300)
 }
 
 exportFigure1(name = "Figure_Subject_1_perf_CR", g1)
@@ -240,6 +235,9 @@ theme_perso_below <- theme_perso + theme(
 
 name = "Figure_Subject_5_confidenceComparison"
 ggp = g5
-png(paste0("/media/FD/Dropbox/IMMPUTE/Manuscript/", name,".png"),  w=18.3, h=6.5, units="cm", res=300)
-print(ggp + theme_perso_below)
-dev.off()
+printGGplot(plot = ggp + theme_perso_below, file = paste0(outputFolder, name), format = ".pdf",w=18.3, h=6.5, units="cm", res=300)
+
+
+# Final Figure ------------------------------------------------------------
+
+printGGplot(plot = g3 + theme_perso, file = paste0(outputFolder, "Figure_SubjectAcc_Final"), w=8.9, h=7.2, units="cm", res=300)

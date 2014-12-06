@@ -9,7 +9,7 @@ require(XLConnect)
 source("Manuscript_palettes.R")
 
 inputFolder <- "/media/FD/Dropbox/IMMPUTE/Manuscript/Data Tables and Figures/"
-outputFolder <- "/media/FD/Dropbox/IMMPUTE/Manuscript/Data Tables and Figures/"
+outputFolder <- "/media/FD/Dropbox/IMMPUTE/Manuscript/Data Tables and Figures/All Figures/"
 
 # Prepare the data --------------------------------------------------------
 
@@ -73,7 +73,7 @@ g1b <- ggplot(datab) + theme_bw(base_size=11) +
   scale_x_reverse() +
   palette_perso +
   palette_perso_fill +
-  geom_hline(y=90, linetype=2, size=0.8, color="grey85") +
+  geom_hline(y=90, linetype=2, size=0.8, color="grey85")
 #   theme(strip.background = element_blank(), strip.text = element_blank(),
 #         panel.grid.major = element_line(colour = "grey85", size = 0.2),
 #         axis.title.x = element_text(vjust = 0.5),
@@ -96,6 +96,6 @@ g1b <- ggplot(datab) + theme_bw(base_size=11) +
 #         axis.ticks = element_line(size = 0.1),
 #         axis.ticks.length = unit(0.15, "lines"))
 
-png(paste0(outputFolder, "Figure_Perf_Recall.png"), w=12, h=8, units="cm", res=300)
+png(paste0(outputFolder, "Figure_Test_Perf_Recall.png"), w=12, h=8, units="cm", res=300)
 print(g1b)
 dev.off()

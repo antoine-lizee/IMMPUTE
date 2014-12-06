@@ -69,7 +69,7 @@ theme_perso_full <- theme_bw(base_size=16) %+replace% theme_perso
 theme_perso <- theme_bw(base_size=7) %+replace% theme_perso2 #AL OVERWRITE for final output
 
 exportFigure1 <- function (name, ggp) {
-  printGGplot(plot = ggp, file = paste0(outputFolder, name), res=300, w=8.9, h=7.2, units="cm")
+  printGGplot(plot = ggp + theme_perso, file = paste0(outputFolder, name), res=300, w=8.9, h=7.2, units="cm")
 }
 
 
@@ -144,7 +144,7 @@ if (figure_3_boolean <- T){
     scale_shape_manual(values=c(21,22,23,24)) +
     guides(fill = guide_legend(order = 2, override.aes = list(shape = 25)),
            shape = guide_legend(order = 1)) +
-    labs(y="Imputation Accuracy - Mask Non-Equivalence (%)", x="Imputation Accuracy - No Mask (%)") +
+    labs(y="Imputation Accuracy - Mask Untrained Alleles (%)", x="Imputation Accuracy - No Mask (%)") +
     ylim(60, 100) + xlim(60,100) +
     coord_equal() +
     palette_perso_fill2 +
