@@ -1,4 +1,7 @@
 
+library(ggplot2)
+library(grid)
+
 source("Manuscript_palettes.R")
 source("Manuscript_Utilities.R")
 
@@ -232,27 +235,34 @@ theme_perso_grid <- function(base_size, ...) {
 }
 
 gdens <- ggplot(data = data_allele_0) + 
-  geom_density(data = data_allele_0.pM, aes(x = snp.distance, y=..count../10, alpha = "pre-Merge"), color = "grey30", fill = NA, size = 0.5,  adjust = 0.1) + #  
-  geom_density(aes(x = snp.distance, y=..count.., alpha = "post-QC"), color = NA, fill = 'grey50', alpha = 0.8, adjust = 0.05) + #  
+  geom_density(data = data_allele_0.pM, aes(x = snp.distance, y=..count../10, alpha = "pre-Merge", linetype = "pre-Merge"), color = "grey10", fill = NA,  adjust = 0.1) + #  
+  geom_density(aes(x = snp.distance, y=..count.., alpha = "post-QC", linetype = "post-QC"), color = NA, fill = 'grey50', adjust = 0.05) + #  
   geom_rect(data = genesDf, aes(xmin = xminD, xmax = xmaxD, fill = allele), alpha = 0.3, color = NA, ymin = 0, ymax = Inf-1) + # ymin = -1.2, ymax = -0.2)+ 
   geom_rect(data = genesDf, aes(xmin = xminD, xmax = xmaxD, fill = allele, color = allele), ymin = -0.3, ymax = -0.1) + # 
-  geom_density(data = data_allele_0.pQC, aes(x = snp.distance, y=..count.., fill = allele, color = allele, alpha = "pre-QC"), size = 0.3,  adjust = 0.05) + #  
-  labs(title = paste("Comparison of SNP density around the four HLA loci, centered on each locus") ,
-       x = "SNP distance to the locus (kbp)", y="SNP density (SNP/kb)", fill = "Locus", color = "Locus", 
-       alpha = "Status \nof the SNPs", linetype = "Status \nof the SNPs") +
-  #   scale_y_continuous(breaks = NULL) +
+  geom_density(data = data_allele_0.pQC, aes(x = snp.distance, y=..count.., fill = allele, color = allele, alpha = "pre-QC", linetype = "pre-QC"), adjust = 0.05) + #  
+  geom_text(data = data_locus, aes(label = paste0("HLA-", allele), x = x_text), y= 11, size = 4, hjust = 0) + 
+  labs(#title = paste("Comparison of SNP density around the four HLA loci, centered on each locus") ,
+       x = "SNP distance to the locus (kbp)", y="SNP density (SNP/kbp)", fill = "Locus", color = "Locus", 
+       alpha = "", linetype = "") + #"Status \nof the SNPs"
   facet_grid(allele~.) +
-  scale_alpha_manual(limits = c( "pre-Merge", "pre-QC", "post-QC"), values = c(0, 0.3, 1)) +
-  scale_linetype_manual(limits = c( "pre-Merge", "pre-QC", "post-QC"), values = c(1, 1, 0)) +
+  scale_alpha_manual(limits = c( "pre-Merge", "pre-QC", "post-QC"), values = c(0, 0.3, 1), labels = c("KG (*0.1)", "HGDP+KG pre-QC", "HGDP+KG post-QC")) +
+  scale_linetype_manual(limits = c( "pre-Merge", "pre-QC", "post-QC"), values = c(1, 0, 0), labels = c("KG (*0.1)", "HGDP+KG pre-QC", "HGDP+KG post-QC")) +
   scale_color_brewer(type="qual", palette=2) + 
   scale_fill_brewer(type="qual", palette=2) +
-  theme_perso_grid(base_size = 8) + 
-  geom_text(data = data_locus, aes(label = paste0("HLA-", allele), x = x_text), y= 11, size = 4, hjust = 0) + 
   scale_x_continuous(expand = c(0.02,0.02)) + 
   scale_y_continuous(breaks = c(0,5,10)) +
-  guides(alpha = guide_legend(order = 1, override.aes = list(colour = "black", fill = "grey70", shape = 12, linetype = 4, size = 3)), 
+  theme_perso_grid(base_size = 8) +
+  guides(alpha = guide_legend(order = 1, override.aes = list(fill = "grey80", size = 0)), 
          linetype = guide_legend(order = 1),
          fill = guide_legend(order = 2), color = guide_legend(order = 2))
+
+## There is obviously a problem with the legends, located in builde_guides and then guide_gengrob.legend (called by guides_gengrob)
+# It seems that it is originated from the intersection between several geoms and the mix of guides.
+# debug(ggplot2:::guide_gengrob.legend)
+# gdensPlot <- ggplot_gtable(ggplot_build(gdens))
+# gdensPlot$guides$linetype$override.aes <- list(fill = NA)
+# print(gdensPlot)
+# NE RIEN LAISSER EN DEHORS DES AES() !!
 
 ginset <- ggplot(data = data_allele) + 
   geom_line(aes(x = abs(snp.distance), y=cumsnp, fill = allele, color = allele), size = 0.8) + #  
