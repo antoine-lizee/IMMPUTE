@@ -237,7 +237,7 @@ theme_perso_grid <- function(base_size, ...) {
 }
 
 gdens <- ggplot(data = data_allele_0) + 
-  geom_density(data = data_allele_0.pM, aes(x = snp.distance, y=..count../10, alpha = "pre-Merge", linetype = "pre-Merge"), color = "black", fill = NA,  adjust = 0.1) + #  
+  geom_density(data = data_allele_0.pM, aes(x = snp.distance, y=..count../10, alpha = "pre-Merge", linetype = "pre-Merge"), color = "grey20", fill = NA,  adjust = 0.1) + #  
   geom_density(aes(x = snp.distance, y=..count.., alpha = "post-QC", linetype = "post-QC"), color = NA, fill = 'grey35', adjust = 0.05) + #  
   geom_rect(data = genesDf, aes(xmin = xminD, xmax = xmaxD, fill = allele), alpha = 0.3, color = NA, ymin = 0, ymax = Inf-1) + # ymin = -1.2, ymax = -0.2)+ 
   geom_rect(data = genesDf, aes(xmin = xminD, xmax = xmaxD, fill = allele, color = allele), ymin = -0.3, ymax = -0.1) + # 
