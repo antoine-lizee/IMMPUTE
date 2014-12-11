@@ -205,7 +205,9 @@ printGGplot(plot = gSNP1, file = paste0(outputFolder, "Figure_SNP_densityCompari
 
 ## badass version with inset
 
-b.bigger <- TRUE
+
+totalPlot <- function(b.bigger) {
+
 data_locus <- data.frame(allele = unique(data_allele_0$allele), x_text = -485)
 
 theme_perso_grid <- function(base_size, ...) {
@@ -213,7 +215,7 @@ theme_perso_grid <- function(base_size, ...) {
     strip.background =   element_blank(),
     panel.border =       element_blank(),
     axis.title.x = element_text(vjust = 0),
-    axis.title.y = element_text(vjust = 1, angle = 90),
+    axis.title.y = element_text(vjust = 0.4, angle = 90),
     strip.background = element_blank(), strip.text = element_blank(),
     legend.text = element_text(size = rel(0.9)),
     legend.title = element_text(size = rel(0.95)),
@@ -229,14 +231,14 @@ theme_perso_grid <- function(base_size, ...) {
 #     legend.box.just = ifelse(b.bigger, "top", "left"),
     legend.box =  "vertical",
     legend.box.just = "left",
-    legend.position = c(1.01, ifelse(b.bigger, 0.62, 0.5)),
+    legend.position = ifelse(rep(b.bigger,2),  c(1.015,0.49), c(0.985,0.46)),
     plot.margin = unit(c(1, ifelse(b.bigger, 8, 6), 0.5, 0.5), "lines") # default @ http://docs.ggplot2.org/dev/vignettes/themes.html
   )
 }
 
 gdens <- ggplot(data = data_allele_0) + 
-  geom_density(data = data_allele_0.pM, aes(x = snp.distance, y=..count../10, alpha = "pre-Merge", linetype = "pre-Merge"), color = "grey10", fill = NA,  adjust = 0.1) + #  
-  geom_density(aes(x = snp.distance, y=..count.., alpha = "post-QC", linetype = "post-QC"), color = NA, fill = 'grey50', adjust = 0.05) + #  
+  geom_density(data = data_allele_0.pM, aes(x = snp.distance, y=..count../10, alpha = "pre-Merge", linetype = "pre-Merge"), color = "black", fill = NA,  adjust = 0.1) + #  
+  geom_density(aes(x = snp.distance, y=..count.., alpha = "post-QC", linetype = "post-QC"), color = NA, fill = 'grey35', adjust = 0.05) + #  
   geom_rect(data = genesDf, aes(xmin = xminD, xmax = xmaxD, fill = allele), alpha = 0.3, color = NA, ymin = 0, ymax = Inf-1) + # ymin = -1.2, ymax = -0.2)+ 
   geom_rect(data = genesDf, aes(xmin = xminD, xmax = xmaxD, fill = allele, color = allele), ymin = -0.3, ymax = -0.1) + # 
   geom_density(data = data_allele_0.pQC, aes(x = snp.distance, y=..count.., fill = allele, color = allele, alpha = "pre-QC", linetype = "pre-QC"), adjust = 0.05) + #  
@@ -245,14 +247,14 @@ gdens <- ggplot(data = data_allele_0) +
        x = "SNP distance to the locus (kbp)", y="SNP density (SNP/kbp)", fill = "Locus", color = "Locus", 
        alpha = "", linetype = "") + #"Status \nof the SNPs"
   facet_grid(allele~.) +
-  scale_alpha_manual(limits = c( "pre-Merge", "pre-QC", "post-QC"), values = c(0, 0.3, 1), labels = c("KG (*0.1)", "HGDP+KG pre-QC", "HGDP+KG post-QC")) +
+  scale_alpha_manual(limits = c( "pre-Merge", "pre-QC", "post-QC"), values = c(0, 0.3, 0.7), labels = c("KG (*0.1)", "HGDP+KG pre-QC", "HGDP+KG post-QC")) +
   scale_linetype_manual(limits = c( "pre-Merge", "pre-QC", "post-QC"), values = c(1, 0, 0), labels = c("KG (*0.1)", "HGDP+KG pre-QC", "HGDP+KG post-QC")) +
   scale_color_brewer(type="qual", palette=2) + 
   scale_fill_brewer(type="qual", palette=2) +
   scale_x_continuous(expand = c(0.02,0.02)) + 
   scale_y_continuous(breaks = c(0,5,10)) +
   theme_perso_grid(base_size = 8) +
-  guides(alpha = guide_legend(order = 1, override.aes = list(fill = "grey80", size = 0)), 
+  guides(alpha = guide_legend(order = 1, override.aes = list(fill = "grey70", size = 0, color = NA)), 
          linetype = guide_legend(order = 1),
          fill = guide_legend(order = 2), color = guide_legend(order = 2))
 
@@ -264,39 +266,55 @@ gdens <- ggplot(data = data_allele_0) +
 # print(gdensPlot)
 # NE RIEN LAISSER EN DEHORS DES AES() !!
 
-ginset <- ggplot(data = data_allele) + 
+ginset <<- ggplot(data = data_allele) + 
   geom_line(aes(x = abs(snp.distance), y=cumsnp, fill = allele, color = allele), size = 0.8) + #  
   #         geom_line(data = data_allele.pQC, aes(x = abs(snp.distance), y=cumsnp, fill = allele, color = allele), size = 0.5, alpha = 0.5) + #  
-  (if(b.bigger) {labs(x = "absolute distance to the locus (kbp)", y="cumulative count of SNPs", fill = "locus", color = "locus")
-  } else { labs(x = NULL, y=NULL, fill = NULL, color = NULL)})  +
+  (if(b.bigger) {labs(x = "absolute distance to the locus (kbp)", y="cumulative count of SNPs")
+  } else { labs(x = NULL, y=NULL, fill = NULL, color = NULL, title = "Cumulative count of SNPs\nfrom center")})  +
   theme_bw(base_size = 6)  + xlim(0,200) + ylim(0,1300) +
   scale_color_brewer(guide = FALSE, type="qual", palette=2) + 
   theme(
     axis.text.y = element_text(angle = 90, hjust = 0.5),
     plot.margin = unit(c(0.2,0.2,0.2,0.2), "lines"))
 
-pdf(paste0(outputFolder, "Figure_SNP_fullWithInset.pdf"), w=cmToInches(18.3), h=cmToInches(11))
-print(gdens)
-#A viewport taking up a fraction of the plot area
-if (b.bigger) {
-  vp <- viewport(width = 0.23, height = 0.36, x = 0.750, y = 0.13, just = c("left", "bottom"))
-} else {
-  vp <- viewport(width = 0.18, height = 0.27, x = 0.815, y = 0.15, just = c("left", "bottom"))
+printBoth <- function() {
+  print(gdens)
+  #A viewport taking up a fraction of the plot area
+  if (b.bigger) {
+    vp <- viewport(width = 0.23, height = 0.36, x = 0.750, y = 0.11, just = c("left", "bottom"))
+  } else {
+    vp <- viewport(width = 0.18, height = 0.34, x = 0.815, y = 0.13, just = c("left", "bottom"))
+  }
+  print(ginset,
+        vp = vp)
 }
-print(ginset,
-      vp = vp)
+
+pdf(paste0(outputFolder, "Figure_SNP_fullWith", ifelse(b.bigger,"BigInset", "SmallInset"), ".pdf"), w=cmToInches(18.3), h=cmToInches(11))
+printBoth()
 dev.off()
 
+if (!b.bigger) {
+  png(paste0(outputFolder, "Figure_SNP_fullWith", ifelse(b.bigger,"BigInset", "SmallInset"), ".png"), w=cmToInches(18.3), h=cmToInches(11), units = "in", res = 300)
+  printBoth()
+  dev.off()
+  tiff(paste0(outputFolder, "Figure_SNP_fullWith", ifelse(b.bigger,"BigInset", "SmallInset"), ".tiff"), w=cmToInches(18.3), h=cmToInches(11), units = "in", res = 300)
+  printBoth()
+  dev.off()
+}
+}
+
+totalPlot(FALSE)
+totalPlot(TRUE)
 
 
 ## Simple plain version ofthe inset
 
-pdf("/media/FD/Dropbox/IMMPUTE/Side_Investigations/Extra_Fig_SNP_DRB1_2s.pdf", w = 5, h= 4)
+pdf(paste0(outputFolder, "Figure_SNP_insetOnly.pdf"), w = 5, h= 4)
 print(ggplot(data = data_allele) + 
         geom_line(aes(x = abs(snp.distance), y=cumsnp, fill = allele, color = allele), size = 1) + #  
         #         geom_line(data = data_allele.pQC, aes(x = abs(snp.distance), y=cumsnp, fill = allele, color = allele), size = 0.5, alpha = 0.5) + #  
-        labs(title = paste("Comparison of cumulative count of SNPs around the four HLA loci") ,
+        labs(title = paste("Comparison of cumulative count of SNPs\naround the four HLA loci") ,
              x = "SNP absolute distance to the locus (kbp)", y="cumulative count of SNPs", fill = "locus", color = "locus") +
-        theme_bw()  + xlim(0,200) + ylim(0,1300) +
+        theme_bw(base_size = 10)  + xlim(0,200) + ylim(0,1300) +
         scale_color_brewer(type="qual", palette=2))
 dev.off()
