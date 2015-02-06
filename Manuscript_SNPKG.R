@@ -214,7 +214,7 @@ theme_perso_grid <- function(base_size, ...) {
   theme_bw(base_size, ...) %+replace% theme(
     strip.background =   element_blank(),
     panel.border =       element_blank(),
-    axis.title.x = element_text(vjust = 0),
+    axis.title.x = element_text(vjust = 0.2),
     axis.title.y = element_text(vjust = 0.4, angle = 90),
     strip.background = element_blank(), strip.text = element_blank(),
     legend.text = element_text(size = rel(0.9)),
@@ -232,13 +232,14 @@ theme_perso_grid <- function(base_size, ...) {
     legend.box =  "vertical",
     legend.box.just = "left",
     legend.position = ifelse(rep(b.bigger,2),  c(1.015,0.49), c(0.985,0.46)),
-    plot.margin = unit(c(1, ifelse(b.bigger, 8, 6), 0.5, 0.5), "lines") # default @ http://docs.ggplot2.org/dev/vignettes/themes.html
+    plot.margin = unit(c(0.5, ifelse(b.bigger, 8, 6.1), 0.4, 0.5), "lines") # default @ http://docs.ggplot2.org/dev/vignettes/themes.html
   )
 }
 
 gdens <- ggplot(data = data_allele_0) + 
-  geom_density(data = data_allele_0.pM, aes(x = snp.distance, y=..count../10, alpha = "pre-Merge", linetype = "pre-Merge"), color = "black", fill = NA,  adjust = 0.1) + #  
-  geom_density(aes(x = snp.distance, y=..count.., alpha = "post-QC", linetype = "post-QC"), color = NA, fill = 'grey35', adjust = 0.05) + #  
+  geom_density(data = data_allele_0.pM, aes(x = snp.distance, y=..count../10, alpha = "pre-Merge", linetype = "pre-Merge"), size = 0.5, color = "grey30", fill = NA,  adjust = 0.1) + #  
+  geom_density(aes(x = snp.distance, y=..count.., alpha = "post-QC", linetype = "post-QC"), color = NA, adjust = 0.05, fill = 'grey50') + # , fill = allele
+#   geom_density(aes(x = snp.distance, y=..count.., linetype = "post-QC", fill = allele), alpha = 0.8, color = NA, adjust = 0.05) + #Just for beauty
   geom_rect(data = genesDf, aes(xmin = xminD, xmax = xmaxD, fill = allele), alpha = 0.3, color = NA, ymin = 0, ymax = Inf-1) + # ymin = -1.2, ymax = -0.2)+ 
   geom_rect(data = genesDf, aes(xmin = xminD, xmax = xmaxD, fill = allele, color = allele), ymin = -0.3, ymax = -0.1) + # 
   geom_density(data = data_allele_0.pQC, aes(x = snp.distance, y=..count.., fill = allele, color = allele, alpha = "pre-QC", linetype = "pre-QC"), adjust = 0.05) + #  
@@ -247,7 +248,7 @@ gdens <- ggplot(data = data_allele_0) +
        x = "SNP distance to the locus (kbp)", y="SNP density (SNP/kbp)", fill = "Locus", color = "Locus", 
        alpha = "", linetype = "") + #"Status \nof the SNPs"
   facet_grid(allele~.) +
-  scale_alpha_manual(limits = c( "pre-Merge", "pre-QC", "post-QC"), values = c(0, 0.3, 0.7), labels = c("KG (*0.1)", "HGDP+KG pre-QC", "HGDP+KG post-QC")) +
+  scale_alpha_manual(limits = c( "pre-Merge", "pre-QC", "post-QC"), values = c(0, 0.3, 0.85), labels = c("KG (*0.1)", "HGDP+KG pre-QC", "HGDP+KG post-QC")) +
   scale_linetype_manual(limits = c( "pre-Merge", "pre-QC", "post-QC"), values = c(1, 0, 0), labels = c("KG (*0.1)", "HGDP+KG pre-QC", "HGDP+KG post-QC")) +
   scale_color_brewer(type="qual", palette=2) + 
   scale_fill_brewer(type="qual", palette=2) +
@@ -283,21 +284,21 @@ printBoth <- function() {
   if (b.bigger) {
     vp <- viewport(width = 0.23, height = 0.36, x = 0.750, y = 0.11, just = c("left", "bottom"))
   } else {
-    vp <- viewport(width = 0.18, height = 0.34, x = 0.815, y = 0.13, just = c("left", "bottom"))
+    vp <- viewport(width = 0.18, height = 0.34, x = 0.81, y = 0.13, just = c("left", "bottom"))
   }
   print(ginset,
         vp = vp)
 }
 
-pdf(paste0(outputFolder, "Figure_SNP_fullWith", ifelse(b.bigger,"BigInset", "SmallInset"), ".pdf"), w=cmToInches(18.3), h=cmToInches(11))
+pdf(paste0(outputFolder, "Figure_SNP_fullWith", ifelse(b.bigger,"BigInset", "SmallInset"), ".pdf"), w=cmToInches(18.3), h=cmToInches(10.5))
 printBoth()
 dev.off()
 
 if (!b.bigger) {
-  png(paste0(outputFolder, "Figure_SNP_fullWith", ifelse(b.bigger,"BigInset", "SmallInset"), ".png"), w=cmToInches(18.3), h=cmToInches(11), units = "in", res = 300)
+  png(paste0(outputFolder, "Figure_SNP_fullWith", ifelse(b.bigger,"BigInset", "SmallInset"), ".png"), w=cmToInches(18.3), h=cmToInches(10.5), units = "in", res = 300)
   printBoth()
   dev.off()
-  tiff(paste0(outputFolder, "Figure_SNP_fullWith", ifelse(b.bigger,"BigInset", "SmallInset"), ".tiff"), w=cmToInches(18.3), h=cmToInches(11), units = "in", res = 300)
+  tiff(paste0(outputFolder, "Figure_SNP_fullWith", ifelse(b.bigger,"BigInset", "SmallInset"), ".tiff"), w=cmToInches(18.3), h=cmToInches(10.5), units = "in", res = 300)
   printBoth()
   dev.off()
 }
@@ -318,3 +319,26 @@ print(ggplot(data = data_allele) +
         theme_bw(base_size = 10)  + xlim(0,200) + ylim(0,1300) +
         scale_color_brewer(type="qual", palette=2))
 dev.off()
+
+
+# Some p-value computation ------------------------------------------------
+
+SNPCount <- function(distanceMax, locus) {
+  max(data_allele$cumsnp[abs(data_allele$snp.distance) < distanceMax & data_allele$allele == locus])
+}
+
+distancesMax <- c(50, 100, 200, 300)
+countMat <- sapply(loci, function(locus) {
+  sapply( distancesMax, SNPCountPVal, locus)
+})
+rownames(countMat) <- distancesMax
+print(countMat)
+
+getPVal <- function(distanceMax, sizeOfBlock) {
+  counts <- sapply(loci, SNPCount, distanceMax=distanceMax)
+  nBlocks <- distanceMax / sizeOfBlock
+  pvals <- sapply(counts/nBlocks, function(count) {
+    sapply(counts/nBlocks, t.test, count)
+  })
+}
+
