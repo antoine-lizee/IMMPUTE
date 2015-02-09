@@ -1,4 +1,7 @@
 ## Script creating the figure 2 - second visualization type - for the IMMPUTE paper
+# This script creates an alternative to the Figure 2 visualization by plotting a 
+# threshold-sliding Subset Accuracy vs Total Accuracy curve, for DRB1 only. 
+# (can be seen as a mutliclass variant to perf-recall)
 #
 # Copyright 08/11/2014 Antoine Lizee @ UCSF.
 # antoine.lizee@ucsf.edu

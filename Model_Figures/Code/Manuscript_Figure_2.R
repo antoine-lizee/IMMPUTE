@@ -1,4 +1,6 @@
 ## Script creating the figure 2 for the IMMPUTE paper
+# This script creates the main validation Figure by plotting a 
+# threshold-sliding Accuracy vs call Rate curve.
 #
 # Copyright 08/11/2014 Antoine Lizee @ UCSF.
 # antoine.lizee@ucsf.edu
