@@ -11,3 +11,5 @@
 .Rproj.user/
 **.Rproj*
 .Rproj.user
+
+.DS_Store
