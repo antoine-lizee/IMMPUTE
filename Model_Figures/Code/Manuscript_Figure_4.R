@@ -10,8 +10,8 @@ library(reshape2)
 library(plyr)
 library(grid)
 
-source("Manuscript_palettes.R")
-source("Manuscript_Utilities.R")
+source("Model_Figures/Code/Helpers/Manuscript_palettes.R")
+source("Model_Figures/Code/Helpers/Manuscript_Utilities.R")
 outputFolder <- "/media/FD/Dropbox/IMMPUTE/Manuscript/Data Tables and Figures/All Figures/"
 
 # Prepare the data --------------------------------------------------------
@@ -19,10 +19,10 @@ outputFolder <- "/media/FD/Dropbox/IMMPUTE/Manuscript/Data Tables and Figures/Al
 # Find by hand the correct paths
 parentDir <- "~/Dropbox/IMMPUTE/Imputation Scoring"
 dir(pattern = "M1AllLoci_MinCut", path = parentDir, full.names = T, recursive = T)
-filePaths <- matrix(c("~/Dropbox/IMMPUTE/Imputation Scoring/UWASH/Experiment 2/Score_2F_NoMask/4D_UWASHexpII_PcurveM1AllLoci_MinCut.txt", "UWASH",
+filePaths <- matrix(c("~/Dropbox/IMMPUTE/Imputation Scoring/UWASH/Experiment 2 update/Score_2F_NoMask/4D_UWASHexpIIupdate_PcurveM1AllLoci_MinCut.txt", "UWASH",
                       "~/Dropbox/IMMPUTE/Imputation Scoring/FHCRC/Experiment 2/Score_2F_NoMask/4D_FHCRC_PcurveM1AllLoci_MinCut.txt", "FHCRC",
                       "~/Dropbox/IMMPUTE/Imputation Scoring/CCHMC/SVM AI/Experiment 2/Score_2F_NoMask/4D_CCHMC_SVMAI_PcurveM1AllLoci_MinCut.txt", "CCHMC",
-                      "~/Dropbox/IMMPUTE/Imputation Scoring/MCRI/Experiment 2/Score_2F_NoMask/4D_MCRIexp2_PcurveM1AllLoci_MinCut.txt", "MCRI"),
+                      "~/Dropbox/IMMPUTE/Imputation Scoring/MCRI/Experiment 2 update fast/Score_2F_NoMask/4D_MCRIexp2updatefast_PcurveM1AllLoci_MinCut.txt", "MCRI"),
                     ncol = 2, byrow = T)
 
 ## Some verifications about coherence of the data we get

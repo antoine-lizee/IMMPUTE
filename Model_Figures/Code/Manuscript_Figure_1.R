@@ -8,16 +8,16 @@ require(XLConnect)
 require(grid)
 library(ggplot2)
 library(reshape2)
-source("geom_point_width_modified.R")
+source("Model_Figures/Code/Helpers/geom_point_width_modified.R")
 
-source("Manuscript_palettes.R")
-source("Manuscript_Utilities.R")
+source("Model_Figures/Code/Helpers/Manuscript_palettes.R")
+source("Model_Figures/Code/Helpers/Manuscript_Utilities.R")
 
 inputFolder <- "/media/FD/Dropbox/IMMPUTE/Manuscript/Data Tables and Figures/"
 outputFolder <- "/media/FD/Dropbox/IMMPUTE/Manuscript/Data Tables and Figures/All Figures/"
 
-# Preapre the data --------------------------------------------------------
 
+# Preapre the data --------------------------------------------------------
 
 methods <- c("HIBAG", "MAGPrediction", "e-HLA", "HLA*IMP:02")
 loci <- c("A", "B", "C", "DRB1")

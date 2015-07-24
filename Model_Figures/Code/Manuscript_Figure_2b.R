@@ -9,7 +9,7 @@
 options(java.parameters="-Xmx4g")
 require(XLConnect)
 
-source("Manuscript_palettes.R")
+source("Model_Figures/Code/Helpers/Manuscript_palettes.R")
 
 inputFolder <- "/media/FD/Dropbox/IMMPUTE/Manuscript/Data Tables and Figures/"
 outputFolder <- "/media/FD/Dropbox/IMMPUTE/Manuscript/Data Tables and Figures/All Figures/"

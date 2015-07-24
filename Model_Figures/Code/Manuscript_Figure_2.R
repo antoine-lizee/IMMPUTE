@@ -11,8 +11,8 @@ library(ggplot2)
 library(grid)
 library(plyr)
 
-source("Manuscript_palettes.R")
-source("Manuscript_Utilities.R")
+source("Model_Figures/Code/Helpers/Manuscript_palettes.R")
+source("Model_Figures/Code/Helpers/Manuscript_Utilities.R")
 
 inputFolder <- "/media/FD/Dropbox/IMMPUTE/Manuscript/Data Tables and Figures/"
 outputFolder <- "/media/FD/Dropbox/IMMPUTE/Manuscript/Data Tables and Figures/All Figures/"

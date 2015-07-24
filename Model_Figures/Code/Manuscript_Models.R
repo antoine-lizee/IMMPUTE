@@ -62,15 +62,16 @@ plogit <- function(t) {
 }
 
 # Filter out the lesser versions for every model
-matchData3 <- matchData2[ ! (matchData2$method %in% c("HIBAG2", "HLA*IMP:02Leg", "HLA*IMP:02Std")), ]
+matchData3 <- matchData2[ ! (matchData2$method %in% c("HIBAG", "HLA*IMP:02Leg", "HLA*IMP:02Std")), ]
 matchData3$method <- factor(matchData3$method) 
 levels(matchData3$method)[levels(matchData3$method)=="HLA*IMP:02Fast"] <- "HLA*IMP:02"
+levels(matchData3$method)[levels(matchData3$method)=="HIBAGv1.3"] <- "HIBAG"
 
 # Create European data from the table
-pct <- c(96.1, 91.7, 89.8, 94.2, 
-         89.3, 86.9, 84.0, 75.7, 
-         95.6, 95.1, 90.3, 95.1, 
-         58.3, 52.9, 53.4, 53.4)
+pct <- c(96.1, 91.7, 89.8, 93.7, 
+         89.3, 86.9, 84.0, 83.0, 
+         95.6, 95.1, 90.3, 96.6, 
+         59.2, 52.9, 53.4, 53.4)
 methods <- c( "HIBAG", "MAGPrediction", "e-HLA", "HLA*IMP:02")
 matchData3Euros <- within(matchData3, {
   method <- rep(methods, 4)
@@ -115,41 +116,52 @@ modAll.intercept <- glm(data = matchData2, cbind(success, fail) ~ method + locus
 # Wald Tests mainly
 
 ## Base model, full populations
-# loci 
-wald.test(b = coef(mod), Sigma = vcov(mod), Terms = 2:4, verbose = T)
-# Methods
-wald.test(b = coef(mod), Sigma = vcov(mod), Terms = 5:7)
+# Methods 
+wald.test(b = coef(mod.intercept), Sigma = vcov(mod.intercept), Terms = 2:4, verbose = T)
+# Loci
+wald.test(b = coef(mod.intercept), Sigma = vcov(mod.intercept), Terms = 5:7)
 
-# Methods, separately, hence in comparison to e-HLA
-ltot1 <- list(list(hyp = "MAGPrediction = e-HLA", term = 5),
-              list(hyp = "HLA*IMP:02 = e-HLA", term = 6),
-              list(hyp = "HIBAG = e-HLA", term = 7))
+# Loci, separately, hence in comparison to locus A
+ltot1 <- list(list(hyp = "B = A", term = 5),
+              list(hyp = "C = A", term = 6),
+              list(hyp = "DRB1 = A", term = 7))
 for (l in ltot1) {
   cat("## Testing hypothesis: \n ### ", l[["hyp"]], "### \n")
-  w <- wald.test(b = coef(mod), Sigma = vcov(mod), Term = l[["term"]])
+  w <- wald.test(b = coef(mod.intercept), Sigma = vcov(mod.intercept), Term = l[["term"]])
+  printWaldTest(w)
+  cat("\n")
+}
+
+# Methods, separately, hence in comparison to e-HLA
+ltot1 <- list(list(hyp = "MAGPrediction = e-HLA", term = 2),
+              list(hyp = "HLA*IMP:02 = e-HLA", term = 3),
+              list(hyp = "HIBAG = e-HLA", term = 4))
+for (l in ltot1) {
+  cat("## Testing hypothesis: \n ### ", l[["hyp"]], "### \n")
+  w <- wald.test(b = coef(mod.intercept), Sigma = vcov(mod.intercept), Term = l[["term"]])
   printWaldTest(w)
   cat("\n")
 }
 
 ## Full Array, using the helpers
 waldLocus <- sapply(5:6, function(i) sapply((i+1):7, function(j) printWaldSignif(mod.intercept, i, j)))
-waldMethods <- sapply(1:3, function(i) sapply((i+1):4, function(j) printWaldSignif(mod.intercept, i, j)))
+waldMethods <- sapply(2:3, function(i) sapply((i+1):4, function(j) printWaldSignif(mod.intercept, i, j)))
 # For Europeans
 waldLocus <- sapply(5:6, function(i) sapply((i+1):7, function(j) printWaldSignif(modEuro.intercept, i, j)))
-waldMethods <- sapply(1:3, function(i) sapply((i+1):4, function(j) printWaldSignif(modEuro.intercept, i, j)))
+waldMethods <- sapply(2:3, function(i) sapply((i+1):4, function(j) printWaldSignif(modEuro.intercept, i, j)))
 # With all methods
 waldLocus <- sapply(8:9, function(i) sapply((i+1):10, function(j) printWaldSignif(modAll.intercept, i, j)))
-waldMethods <- sapply(1:6, function(i) sapply((i+1):7, function(j) printWaldSignif(modAll.intercept, i, j)))
+waldMethods <- sapply(2:6, function(i) sapply((i+1):7, function(j) printWaldSignif(modAll.intercept, i, j)))
 
 cbind(unlist(waldMethods))
 
 
 # SS ------------------------------------------------------------------
 
-pct <- c(87.0, 87.0, 85.5, 86.0,
-         58.5, 70.0, 55.5, 64.0,
-         82.5, 94.0, 88.5, 92.0,
-         42.5, 56.0, 49.5, 53.0)
+pct <- c(87.0, 88.0, 84.0, 86.0,
+         58.5, 69.5, 65.5, 64.0,
+         82.5, 94.0, 93.5, 92.0,
+         42.5, 55.5, 49.5, 53.0)
 methods <- c( "e-HLA", "HIBAG",  "HLA*IMP:02", "MAGPrediction")
 
 matchData3SSA <- within(matchData3, {
@@ -275,6 +287,6 @@ ggMethods <- ggplot(coeffDf, aes(x=value, y=OR, ymin = OR_2.5, ymax = OR_97.5)) 
         #           axis.title.x = element_blank(),
         panel.margin = unit(0.5, "lines"))
 
-ggsave(filename=paste0("/media/FD/Dropbox/IMMPUTE/Modeling/", "SupplFigure_NewVsOld",".png"), 
-       plot=ggMethods,
-       w=8.9*2, h=7.2*2, units="cm", dpi=300/2)
+printGGplot(file=paste0(outputFolder, "Figure_Model_NewVsOld"),
+            plot=ggMethods,
+            w=8.9*2, h=7.2*2, units="cm", res=300/2)
