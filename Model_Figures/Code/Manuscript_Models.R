@@ -43,7 +43,7 @@ for (i in 1:nrow(filePaths)) {
 
 ##Apply LUT
 institutes <- c("UWASH", "UWASH2", "FHCRC", "CCHMC", "MCRI", "MCRI2fast", "MCRI2std")
-methods <- c("HIBAG", "HIBAG2", "MAGPrediction", "e-HLA", "HLA*IMP:02Leg", "HLA*IMP:02Fast", "HLA*IMP:02Std")
+methods <- c("HIBAGv1.1", "HIBAGv1.3", "MAGPrediction", "e-HLA", "HLA*IMP:02Leg", "HLA*IMP:02Fast", "HLA*IMP:02Std")
 levels(matchData$method)[levels(matchData$method) %in% institutes] <- methods[match(levels(matchData$method), institutes, nomatch=0)]
 
 # Quick look at the raw data
@@ -62,7 +62,7 @@ plogit <- function(t) {
 }
 
 # Filter out the lesser versions for every model
-matchData3 <- matchData2[ ! (matchData2$method %in% c("HIBAG", "HLA*IMP:02Leg", "HLA*IMP:02Std")), ]
+matchData3 <- matchData2[ ! (matchData2$method %in% c("HIBAGv1.1", "HLA*IMP:02Leg", "HLA*IMP:02Std")), ]
 matchData3$method <- factor(matchData3$method) 
 levels(matchData3$method)[levels(matchData3$method)=="HLA*IMP:02Fast"] <- "HLA*IMP:02"
 levels(matchData3$method)[levels(matchData3$method)=="HIBAGv1.3"] <- "HIBAG"
@@ -187,7 +187,7 @@ matchData1R <- matchData[ matchData$sample.id %in% sampleIds[sample(length(sampl
 matchData2R <- ddply(matchData1R, ~ locus + method, summarize, success = sum(success, na.rm = T), fail = length(sample.id)*2 - success)
 within(matchData2R, sumsf <- success + fail) 
 
-matchData3R <- matchData2R[ ! (matchData2$method %in% c("HIBAG2", "HLA*IMP:02Leg", "HLA*IMP:02Std")), ]
+matchData3R <- matchData2R[ ! (matchData2$method %in% c("HIBAGv1.3", "HLA*IMP:02Leg", "HLA*IMP:02Std")), ]
 matchData3R$method <- factor(matchData3R$method)
 levels(matchData3R$method)[levels(matchData3R$method)=="HLA*IMP:02Fast"] <- "HLA*IMP:02"
 
@@ -243,7 +243,7 @@ print(getCoeffs(MODEURO.intercept))
 # Comparison of the different flavours within a method --------------------
 
 ## HIBAG
-matchDataHB <- matchData2[matchData2$method %in% c("HIBAG", "HIBAG2"), ]
+matchDataHB <- matchData2[matchData2$method %in% c("HIBAGv1.1", "HIBAGv1.3"), ]
 matchDataHB$method <- factor(matchDataHB$method)
 
 matchData4HB <- booleaniseFactors(matchDataHB, c("method", "locus"))
